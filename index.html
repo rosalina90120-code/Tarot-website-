@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>神秘塔羅占卜 </title>
+    <style>
+        /* 🌟 終極魔法：強制移除全站所有元素的粗體設定 */
+        * {
+            font-weight: normal !important;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #050914; /* 重複的已刪除 */
+            color: #ecf0f1; 
+            font-family: 'Kiwi Maru', serif; /* 🌟 魔法在這裡：換成奇異果圓體 */
+            text-align: center; 
+            padding: 30px 20px 50px; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        h1 { color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.8); font-size: 36px; margin-bottom: 20px;}
+        /* 👆👆 補回這兩行 👆👆 */
+        
+        #setupSection { 
+            background-color: rgba(44, 62, 80, 0.15); /* 透明度大幅提高 */
+            padding: 30px; 
+            border-radius: 15px; 
+            margin: 0 auto 30px; 
+            max-width: 950px; 
+            box-shadow: none; /* 徹底拿掉陰影 */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* 換成極淡的細白邊框 */
+            backdrop-filter: blur(6px); 
+        }
+        /* 🌟 2. 輸入問題的框框：透明背景、細白框、白字 */
+        .question-input { 
+            width: 85%; 
+            padding: 15px; 
+            font-size: 18px; 
+            border-radius: 8px; 
+            border: 1px solid rgba(255, 255, 255, 0.5); /* 氣質細白框 */
+            margin-bottom: 25px; 
+            background-color: transparent; /* 抽掉原本的白色底色 */
+            color: #ecf0f1; /* 讓打出來的字變成白色 */
+            transition: all 0.3s ease; 
+        }
+        .question-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .question-input:focus { 
+            outline: none; 
+            border-color: #ffffff; 
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.3); 
+        }
+        
+/* 🌟 大師專屬推薦按鈕：透明白框、懸浮發光 */
+        .magic-btn {
+            background-color: transparent; /* 拿掉底色，完全透明 */
+            color: #ecf0f1; /* 文字變白色 */
+            border: 1px solid rgba(255, 255, 255, 0.4); /* 氣質細白框 */
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px); /* 微微的毛玻璃感 */
+            letter-spacing: 1px;
+        }
+
+        /* 🌟 滑鼠經過時的發光特效 */
+        .magic-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* 微微透出淡淡白光 */
+            border-color: #ffffff; /* 邊框變純白 */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* 散發白色光暈 */
+            transform: translateY(-2px); /* 輕盈地往上浮起一點點 */
+        }
+
+        .spread-options { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;}
+        /* 🌟 牌陣選擇按鈕：透明白框、毛玻璃質感 */
+        .spread-btn {
+            background-color: transparent; /* 拿掉厚重的深色底，變透明 */
+            color: #ecf0f1;
+            border: 1px solid rgba(255, 255, 255, 0.4); /* 換成氣質細白框 */
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 220px;
+            backdrop-filter: blur(4px); /* 微微的透視模糊感 */
+        }
+
+        /* 🌟 滑鼠經過時的發光浮動特效 */
+        .spread-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* 微微透出淡淡白光 */
+            border-color: #ffffff; /* 邊框變純白 */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* 散發迷人白色光暈 */
+            transform: translateY(-3px); /* 輕盈地往上浮起 */
+        }
+        /* 🌟 牌陣大標題 (例如：每日一占、愛情之樹) */
+        .spread-title { 
+            font-size: 18px; /* 字體大小可以隨喜好微調 */
+            font-weight: normal; /* 🔮 魔法在這裡：把 bold 改成 normal，解除粗體限制 */
+            color: #f1c40f; 
+            margin-bottom: 5px; 
+            text-align: center; 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            gap: 6px; 
+        }
+        .spread-desc { font-size: 14px; color: #bdc3c7; }
+
+        /* 🌟 最上排常用牌陣：強制一排 3 個，看起來更大氣 */
+        .top-spreads {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* 🌟 分類摺疊選單設定 (超美毛玻璃質感) */
+        .spread-category {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+            text-align: left; /* 讓標題靠左 */
+        }
+        
+        /* 展開時邊框發光 */
+        .spread-category[open] {
+            border-color: rgba(241, 196, 15, 0.5); /* 展開時帶點神聖的金色邊框 */
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* 🌟 分類標題按鈕 */
+        /* 🌟 分類標題按鈕：標題強制置中 */
+        .spread-category summary {
+            padding: 15px 45px; /* 左右增加空間，不讓文字撞到箭頭 */
+            font-size: 18px;
+            font-weight: bold;
+            color: #ecf0f1;
+            cursor: pointer;
+            list-style: none; 
+            display: flex;
+            justify-content: center; /* 🔮 魔法在這裡：讓大標題強制置中 */
+            align-items: center;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            position: relative; /* 🔮 魔法在這裡：作為箭頭絕對定位的基準 */
+        }
+        
+        .spread-category summary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 隱藏 Safari 的原生箭頭 */
+        .spread-category summary::-webkit-details-marker { display: none; }
+
+        /* 自訂一個有質感的下拉箭頭，並固定在最右側 */
+        .spread-category summary::after {
+            content: "▼";
+            font-size: 14px;
+            color: #f1c40f;
+            transition: transform 0.3s ease;
+            position: absolute; /* 🔮 魔法在這裡：讓箭頭脫離排版 */
+            right: 25px; /* 固定在距離右邊 25px 的位置 */
+        }
+        /* 展開時箭頭轉向 */
+        .spread-category[open] summary::after {
+            transform: rotate(180deg);
+        }
+        
+        .spread-category summary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 隱藏 Safari 的原生箭頭 */
+        .spread-category summary::-webkit-details-marker { display: none; }
+
+        /* 自訂一個有質感的下拉箭頭 */
+        .spread-category summary::after {
+            content: "▼";
+            font-size: 14px;
+            color: #f1c40f;
+            transition: transform 0.3s ease;
+        }
+        /* 展開時箭頭轉向 */
+        .spread-category[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        /* 🌟 展開後的內容區塊 */
+        .category-content {
+            padding: 20px 25px 30px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* 🌟 純圖示圓形按鈕風格 (仿 HeroUI 質感) */
+        .icon-only-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background-color: rgba(255, 255, 255, 0.1); color: #f1c40f; font-size: 18px;
+            cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
+            outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); flex-shrink: 0;
+        }
+        .icon-only-btn:hover { background-color: rgba(255, 255, 255, 0.25); transform: scale(1.05); }
+        .icon-only-btn:active { transform: scale(0.95); }
+
+        #drawSection { display: none; } 
+        .user-question-display { font-size: 22px; color: #2ecc71; margin: 10px 0 20px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .instruction-prompt { font-size: 24px; color: #f39c12; font-weight: bold; margin: 20px 0; display: none; text-shadow: 0 2px 5px rgba(0,0,0,0.8); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .spread-area {
+            display: none; flex-wrap: wrap; justify-content: center; max-width: 900px;
+            margin: 20px auto 40px; padding: 25px 15px; background: rgba(44, 62, 80, 0.6);
+            border-radius: 15px; border: 2px dashed #7f8c8d;
+        }
+        .spread-card {
+            width: 40px; height: 68px; margin: 0 -12px 10px 0; 
+            cursor: pointer; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.2s, opacity 0.3s;
+            border-radius: 4px; box-shadow: -2px 2px 5px rgba(0,0,0,0.5); object-fit: cover;
+        }
+        .spread-card:hover { transform: translateY(-15px) scale(1.1); z-index: 10; position: relative; filter: brightness(1.2); }/* 🌟 你的問題顯示：換成與星空和諧的星光銀藍色，並帶有微微光暈 */
+        .user-question-display { 
+            font-size: 22px; 
+            color: #d6eaf8; /* 柔和的高級星光銀藍色 */
+            margin: 10px 0 25px; 
+            font-weight: bold; 
+            text-shadow: 0 0 10px rgba(214, 234, 248, 0.4); /* 拿掉生硬黑影，換成柔和光暈 */
+            letter-spacing: 1px; /* 字距稍微拉開一點點，更有氣質 */
+        }
+        .spread-card.picked { opacity: 0; pointer-events: none; transform: translateY(-30px) scale(0.5); }
+
+        #slotsContainer { margin: 0 auto 40px; }
+        .layout-linear { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .layout-cross {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto;
+            gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto;
+        }
+        .cross-pos-0 { grid-column: 1; grid-row: 2; } 
+        .cross-pos-1 { grid-column: 3; grid-row: 2; } 
+        .cross-pos-2 { grid-column: 2; grid-row: 1; } 
+        .cross-pos-3 { grid-column: 2; grid-row: 2; } 
+        .cross-pos-4 { grid-column: 2; grid-row: 3; } 
+        
+        .layout-life { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 1000px; margin: 0 auto; }
+        .life-pos-0 { grid-column: 1 / 5; grid-row: 1; justify-self: center; } 
+        .life-pos-1 { grid-column: 1; grid-row: 2; }
+        .life-pos-2 { grid-column: 2; grid-row: 2; }
+        .life-pos-3 { grid-column: 3; grid-row: 2; }
+        .life-pos-4 { grid-column: 4; grid-row: 2; }
+
+        .layout-lovetree { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .tree-pos-0 { grid-column: 2; grid-row: 2; } 
+        .tree-pos-1 { grid-column: 1; grid-row: 1; } 
+        .tree-pos-2 { grid-column: 2; grid-row: 1; } 
+        .tree-pos-3 { grid-column: 3; grid-row: 1; } 
+        .tree-pos-4 { grid-column: 2; grid-row: 3; } 
+        
+        .layout-core { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .core-pos-0 { grid-column: 2; grid-row: 1; } 
+        .core-pos-1 { grid-column: 1; grid-row: 2; } 
+        .core-pos-2 { grid-column: 2; grid-row: 2; } 
+        .core-pos-3 { grid-column: 3; grid-row: 2; } 
+
+        .layout-partner { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .partner-pos-0 { grid-column: 2; grid-row: 2; } 
+        .partner-pos-1 { grid-column: 1; grid-row: 1; } 
+        .partner-pos-2 { grid-column: 3; grid-row: 1; } 
+        .partner-pos-3 { grid-column: 1; grid-row: 3; } 
+        .partner-pos-4 { grid-column: 3; grid-row: 3; } 
+
+        .layout-friendship { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .friend-pos-0 { grid-column: 1; grid-row: 1; } 
+        .friend-pos-1 { grid-column: 1; grid-row: 2; } 
+        .friend-pos-2 { grid-column: 2; grid-row: 1; } 
+        .friend-pos-3 { grid-column: 2; grid-row: 2; } 
+        .friend-pos-4 { grid-column: 3; grid-row: 1; } 
+        .friend-pos-5 { grid-column: 3; grid-row: 2; } 
+
+        .layout-heart { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .heart-pos-0 { grid-column: 2; grid-row: 2; } 
+        .heart-pos-1 { grid-column: 2; grid-row: 3; } 
+        .heart-pos-2 { grid-column: 1; grid-row: 2; } 
+        .heart-pos-3 { grid-column: 3; grid-row: 2; } 
+        .heart-pos-4 { grid-column: 1; grid-row: 1; } 
+        .heart-pos-5 { grid-column: 3; grid-row: 3; } 
+        .heart-pos-6 { grid-column: 3; grid-row: 1; } 
+        .heart-pos-7 { grid-column: 1; grid-row: 3; } 
+
+        .layout-celtic { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto auto; gap: 15px; justify-content: center; max-width: 1100px; margin: 0 auto; align-items: start;}
+        .celtic-pos-0 { grid-column: 2; grid-row: 2; } 
+        .celtic-pos-1 { grid-column: 2; grid-row: 3; } 
+        .celtic-pos-2 { grid-column: 2; grid-row: 1; } 
+        .celtic-pos-3 { grid-column: 2; grid-row: 4; } 
+        .celtic-pos-4 { grid-column: 3; grid-row: 2 / span 2; } 
+        .celtic-pos-5 { grid-column: 1; grid-row: 2 / span 2; } 
+        .celtic-pos-6 { grid-column: 4; grid-row: 4; } 
+        .celtic-pos-7 { grid-column: 4; grid-row: 3; } 
+        .celtic-pos-8 { grid-column: 4; grid-row: 2; } 
+        .celtic-pos-9 { grid-column: 4; grid-row: 1; } 
+
+        /* 🌟 新增：是非題占卜法 (橫向微弧形排列，重現圖片質感) */
+        .layout-yesno { display: flex; justify-content: center; gap: 20px; max-width: 900px; margin: 0 auto; }
+        .yesno-pos-0 { margin-top: 25px; } /* 左邊牌微降 */
+        .yesno-pos-1 { margin-top: 0px; }  /* 中間牌最高 */
+        .yesno-pos-2 { margin-top: 25px; } /* 右邊牌微降 */
+
+        /* 🌟 新增：問題解決牌陣 (垂直排列，由下到上 1->2->3) */
+        .layout-problem { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .problem-pos-0 { grid-row: 3; } /* 1 原因 */
+        .problem-pos-1 { grid-row: 2; } /* 2 情形 */
+        .problem-pos-2 { grid-row: 1; } /* 3 對策 */
+
+        /* 🌟 新增：四要素展開法 (四角排列) */
+        .layout-elements { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 600px; margin: 0 auto; }
+        .elem-pos-0 { grid-column: 2; grid-row: 2; } /* 1 火 */
+        .elem-pos-1 { grid-column: 1; grid-row: 1; } /* 2 風 */
+        .elem-pos-2 { grid-column: 2; grid-row: 1; } /* 3 水 */
+        .elem-pos-3 { grid-column: 1; grid-row: 2; } /* 4 土 */
+
+        /* 🌟 新增：鑽石占卜法 (菱形排列) */
+        .layout-diamond { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .diamond-pos-0 { grid-column: 2; grid-row: 3; } /* 1 過去 */
+        .diamond-pos-1 { grid-column: 3; grid-row: 2; } /* 2 現況(右) */
+        .diamond-pos-2 { grid-column: 1; grid-row: 2; } /* 3 現況(左) */
+        .diamond-pos-3 { grid-column: 2; grid-row: 1; } /* 4 未來 */
+
+        /* 🌟 新增：戀人金字塔牌陣 (金字塔排列) */
+        .layout-pyramid { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .pyramid-pos-0 { grid-column: 2; grid-row: 2; } /* 1 自身 */
+        .pyramid-pos-1 { grid-column: 1; grid-row: 2; } /* 2 對象 */
+        .pyramid-pos-2 { grid-column: 3; grid-row: 2; } /* 3 關係 */
+        .pyramid-pos-3 { grid-column: 2; grid-row: 1; } /* 4 將來 */
+
+
+        /* 🌟 1. 統一所有的卡牌框設定 (包含主牌面與追加指引) */
+        .card-container {
+            width: 240px; 
+            /* 統一的玻璃質感 */
+            background-color: rgba(255, 255, 255, 0.05) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(8px);
+            color: #ecf0f1;
+            border-radius: 12px; 
+            padding: 15px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            /* 統一金色的頂部細邊框，讓追加卡片與主牌面完全一致 */
+            border-top: 3px solid #f1c40f !important; 
+            
+            /* 翻牌動畫靈魂 */
+            transition: transform 0.4s ease-in-out, opacity 0.4s !important; 
+            transform-style: preserve-3d; 
+            margin: 0 auto;
+        }
+
+        /* 🌟 2. 空白牌槽的樣式 (等待抽牌時的虛線框) */
+        .card-container.empty-slot { 
+            background-color: rgba(255, 255, 255, 0.02) !important; 
+            border: 1px dashed rgba(255, 255, 255, 0.3) !important; 
+            border-top: 1px dashed rgba(255, 255, 255, 0.3) !important; 
+            box-shadow: none; 
+        }
+        .card-container.empty-slot .card-image { opacity: 0.4; filter: grayscale(100%); }
+        .card-image.reversed { transform: rotate(180deg); }
+        
+        /* 🌟 3. 牌名與標題顏色純淨化 (星空透明版) */
+        .position-title { font-size: 16px; margin-bottom: 10px; font-weight: bold; background: rgba(255,255,255,0.15) !important; color: #fff; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2) !important;}
+        .card-image { width: 140px; height: 220px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; }
+        .card-name { font-size: 18px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.3) !important; padding-bottom: 5px; width: 100%; color: #f1c40f !important; text-shadow: 0 0 5px rgba(241,196,15,0.3);}
+        .card-meaning { font-size: 13px; line-height: 1.5; text-align: justify; width: 100%; color: #ecf0f1; }
+
+        /* 🌟 4. 翻牌動畫的旋轉設定 */
+        .flip-out { 
+            transform: rotateY(90deg) scale(0.95); 
+            opacity: 0.3; 
+        }
+
+    /* 🌟 解讀大框框：超高透明度、無陰影、四周極淡細白框 (取代原本的左邊粗黃線) */
+        .synthesis-section { 
+            display: none; 
+            background-color: rgba(255, 255, 255, 0.05); /* 透明度調到極高 */
+            color: #ecf0f1; max-width: 850px; 
+            margin: 40px auto 0; padding: 35px; border-radius: 15px; 
+            box-shadow: none; /* 徹底拿掉陰影 */
+            text-align: left; 
+            border: 1px solid rgba(255, 255, 255, 0.2); /* 氣質細白邊框 */
+            backdrop-filter: blur(6px); 
+        }
+
+        /* 🌟 調整後的標題：更大、更開闊、更有作文層次感 */
+        .synthesis-title { 
+            color: #f1c40f;         /* 標題保持原本的金色，更有辨識度 */
+            font-size: 32px;        /* 把字體從 26px 放大到 32px */
+            font-weight: bold; 
+            margin-bottom: 30px;    /* 拉開與下面內文的距離 (30px 是個很舒服的間距) */
+            text-align: center;     /* 置中看起來更像正式標題 */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 加上一條極細的線，區分標題與內容 */
+            padding-bottom: 15px;
+        }
+        
+        /* 🌟 解讀框裡的標題：拿掉藍色/黃色，變純白並加上微微發光感 */
+        .synthesis-content h3 { color: #ffffff; font-size: 22px; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 8px; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
+        
+        .synthesis-content { font-size: 18px; line-height: 1.6; white-space: pre-wrap; color: #ffffff !important; }
+        
+        /* 🌟 解讀框裡的重點粗體字 (b標籤)：保留金色，拿掉發光毛邊讓字體更銳利清晰 */
+        .synthesis-content b { 
+            color: #f1c40f; 
+            font-weight: bold; 
+            text-shadow: none; /* 將發光效果關閉 */
+        }
+
+        /* 🌟 讓摺疊分類裡面的按鈕與文字，重新回到完美的置中對齊 */
+        .category-content .spread-btn {
+            text-align: center; /* 讓說明文字置中 */
+        }
+        
+        .category-content .spread-title {
+            display: flex;
+            justify-content: center; /* 讓標題與小圖示完美置中 */
+            align-items: center;
+            gap: 5px; /* 讓圖示跟文字有一點點舒服的距離 */
+        }
+        
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <h1>🔮 神秘塔羅占卜</h1>
+    
+    <div id="setupSection">
+        <input type="text" id="questionInput" class="question-input" placeholder="請先輸入你的具體問題 (大師會依此為您解惑)...">
+        
+        <div style="margin-bottom: 25px;">
+            <button class="magic-btn" onclick="suggestSpreads()">
+                ✨ 讓大師為我挑選牌陣
+            </button>
+        </div>
+
+        <div id="suggestionBox" style="display: none; background-color: rgba(142, 68, 173, 0.15); padding: 20px; border-radius: 10px; border: 1px dashed #9b59b6; margin-bottom: 30px;">
+            <div id="suggestionReason" style="font-size: 16px; color: #f1c40f; margin-bottom: 15px; font-weight: bold; line-height: 1.5;"></div>
+            <div id="suggestedSpreads" class="spread-options" style="margin-bottom: 0;"></div>
+        </div>
+
+        <div style="font-size: 16px; margin-bottom: 15px; color: #bdc3c7; border-top: 1px solid #34495e; padding-top: 20px;">或者，您也可以自行選擇適用的牌陣：</div>
+        
+        <div style="font-size: 16px; margin-bottom: 20px; color: #f1c40f; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">🔥 常用牌陣推薦：</div>
+        
+        <div class="spread-options top-spreads">
+            <div class="spread-btn" onclick="startDrawing('daily')">
+                <div class="spread-title">☀️ 每日一占</div>
+                <div class="spread-desc">運勢專用 (1張牌)<br>預測今日的具體場景與運勢</div>
+            </div>
+            <div class="spread-btn" onclick="startDrawing('classic')">
+                <div class="spread-title">⏳ 經典時間</div>
+                <div class="spread-desc">通用型 (3張牌)<br>解析過去、現在、未來的發展</div>
+            </div>
+            <div class="spread-btn" onclick="startDrawing('yesNo')">
+                <div class="spread-title">⭕ 是非題占卜</div>
+                <div class="spread-desc">單一問題 (3張牌)<br>快速得到肯定或否定的明確答案</div>
+            </div>
+        </div>
+
+        <div style="font-size: 16px; margin-bottom: 15px; color: #bdc3c7; margin-top: 20px;"> 探索更多專業牌陣分類：</div>
+        
+        <details class="spread-category">
+            <summary>💖 戀愛與感情專區</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('loveTree')">
+                        <div class="spread-title">🌳 愛情之樹</div>
+                        <div class="spread-desc">感情專用 (5張牌)<br>簡明準確的戀愛過去與潛力</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('loveCross')">
+                        <div class="spread-title">❤️ 戀愛十字</div>
+                        <div class="spread-desc">感情專用 (5張牌)<br>深入分析雙方心態與外界影響</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('findPartner')">
+                        <div class="spread-title">🔍 尋找對象</div>
+                        <div class="spread-desc">感情專用 (5張牌)<br>幫你做好準備，再出發追愛</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('loversPyramid')">
+                        <div class="spread-title">🔺 戀人金字塔</div>
+                        <div class="spread-desc">感情專用 (4張牌)<br>深入了解雙方關係與未來走向</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('voiceOfHeart')">
+                        <div class="spread-title">💗 心之聲牌陣</div>
+                        <div class="spread-desc">感情專用 (8張牌)<br>多角度解讀在意之人的關係建言</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="spread-category">
+            <summary>💼 事業與問題解決</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('coreDirect')">
+                        <div class="spread-title">🗡️ 直指核心</div>
+                        <div class="spread-desc">解惑專用 (4張牌)<br>直擊問題核心與破局對策</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('problemSolving')">
+                        <div class="spread-title">🗝️ 問題解決牌陣</div>
+                        <div class="spread-desc">突破困境 (3張牌)<br>釐清起因與現況，找出突破對策</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('actionPlan')">
+                        <div class="spread-title">🏃 行動計畫</div>
+                        <div class="spread-desc">執行專用 (5張牌)<br>完善自己，找出具體解決之道</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('fourElements')">
+                        <div class="spread-title">🍀 四要素展開</div>
+                        <div class="spread-desc">全方位 (4張牌)<br>從行動、言語、感情、物質四面剖析</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="spread-category">
+            <summary>🌱 人生探索與運勢</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('lifeStage')">
+                        <div class="spread-title">🌱 人生階段</div>
+                        <div class="spread-desc">靈性專用 (5張牌)<br>探索當下的生命季節與修行</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('diamond')">
+                        <div class="spread-title">💎 鑽石占卜法</div>
+                        <div class="spread-desc">通用型 (4張牌)<br>簡潔豐富地看透過去、現在與未來</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('celticCross')">
+                        <div class="spread-title">✝️ 塞爾特十字</div>
+                        <div class="spread-desc">專業高階 (10張牌)<br>全方位宏觀解析複雜問題的因果</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="spread-category">
+            <summary>🤝 人際與友誼</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('friendship')">
+                        <div class="spread-title">🤝 友誼占卜</div>
+                        <div class="spread-desc">人際專用 (6張牌)<br>輕鬆明白他人的心意與盲點</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+    </div><div id="drawSection">
+        <div id="displayQuestion" class="user-question-display"></div>
+        <div id="instructionPrompt" class="instruction-prompt"></div>
+        <div id="spreadArea" class="spread-area"></div>
+        <div id="slotsContainer"></div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="location.reload()" style="background-color: #7f8c8d; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.3s;" onmouseover="this.style.background='#95a5a6'" onmouseout="this.style.background='#7f8c8d'">← 返回重新選擇</button>
+        </div>
+
+        <div id="synthesisBox" class="synthesis-section">
+            <div class="synthesis-title">✨ 專屬大師綜合解讀</div>
+            <div id="synthesisText" class="synthesis-content"></div>
+            <br>
+
+            <div id="followUpSection" style="margin-top: 40px; border-top: 1px dashed #7f8c8d; padding-top: 30px; text-align: center;">
+                <h3 style="color: #ffffff; font-size: 20px; margin-bottom: 15px; border: none; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);">💬 意猶未盡？向大師追加提問</h3>
+                <input type="text" id="followUpInput" class="question-input" style="width: 80%; margin-bottom: 15px;" placeholder="請輸入你想追問的細節，大師將為你追加抽牌...">
+                <br>
+                <button id="followUpBtn" class="spread-btn" style="background-color: #2980b9; border-color: #3498db; width: auto; padding: 10px 25px; font-size: 16px;" onclick="drawFollowUpCard()">
+                    🃏 抽取一張追加牌
+                </button>
+                
+                <div id="followUpCardBox" class="card-container empty-slot" style="display: none; margin-top: 25px;">
+                    <div class="position-title">【 追加指引 】</div>
+                    <img id="followUpCardImg" class="card-image" src="images/card-empty.jpg" alt="空白">
+                    <div id="followUpCardName" class="card-name" style="color:#bdc3c7;">等待抽取...</div>
+                    <div id="followUpCardMeaning" class="card-meaning"></div>
+                </div>
+                
+                <div id="followUpText" class="synthesis-content" style="margin-top: 25px; text-align: left;"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="location.reload()" style="background: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">重新占卜一局</button>
+            </div>
+        </div>
+    </div> 
+
+    <div style="margin: 60px auto 20px; max-width: 800px; background-color: transparent; padding: 30px; border-radius: 15px; border-top: 1px solid rgba(255, 255, 255, 0.4); border-bottom: 1px solid rgba(255, 255, 255, 0.4); color: #ecf0f1; line-height: 1.8; text-align: left; font-size: 16px; position: relative; z-index: 10;">
+        <h3 style="color: #f1c40f; text-align: center; margin-top: 0; font-size: 22px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">🌹 命理師的真心話與初衷</h3>
+        <p style="text-align: justify; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+            在這個動盪不安的社會與世界裡，科學或許能解釋萬物的運作，卻無法完全定義人與人之間的情懷、牽絆，以及靈魂深處的連結。
+        </p>
+        <p style="text-align: justify; margin-bottom: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+            我創造這個空間的初衷，是希望能用自己微薄的力量去幫助更多人。透過塔羅牌卡的解讀，接住每一個迷惘的片刻，讓大家在面對未知時，內心能少一點焦慮、多一點平靜與富足。無論抽到什麼牌，請記得，這只是一個指引，而力量始終在你自己的手中。
+        </p>
+    </div>  
+
+    <script>
+        // 👇👇 你的金鑰填在這裡！ 👇👇
+        const GEMINI_API_KEY = "請填入你自己的 API Key";
+        // 👆👆👆👆👆👆👆👆👆👆👆👆👆👆
+
+        // 🚀 大師智囊團清單 (全域通行證)
+        const fallbackModels = [
+            "gemini-3.5-flash",
+            "gemini-flash-latest",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-2.5-flash",
+            "gemini-2.0-flash"
+        ];
+
+        const spreadsData = {
+            "daily": { name: "每日一占", layoutClass: "layout-linear", positions: [ { name: "今日運勢與場景", cssClass: "" } ] },
+            "classic": { name: "經典時間牌陣", layoutClass: "layout-linear", positions: [ { name: "過去 Past", cssClass: "" }, { name: "現在 Present", cssClass: "" }, { name: "未來 Future", cssClass: "" } ] },
+            "coreDirect": { name: "直指核心牌陣", layoutClass: "layout-core", positions: [ { name: "① 問題核心", cssClass: "core-pos-0" }, { name: "② 障礙/短處", cssClass: "core-pos-1" }, { name: "③ 對策", cssClass: "core-pos-2" }, { name: "④ 資源/長處", cssClass: "core-pos-3" } ] },
+            "loveCross": { name: "戀愛十字牌陣", layoutClass: "layout-cross", positions: [ { name: "① 你的心情", cssClass: "cross-pos-0" }, { name: "② 對方態度", cssClass: "cross-pos-1" }, { name: "③ 現在狀況", cssClass: "cross-pos-2" }, { name: "④ 外界影響", cssClass: "cross-pos-3" }, { name: "⑤ 未來結果", cssClass: "cross-pos-4" } ] },
+            "actionPlan": { name: "行動計畫牌陣", layoutClass: "layout-linear", positions: [ { name: "① 想改善的現狀", cssClass: "" }, { name: "② 解決方案一", cssClass: "" }, { name: "③ 解決方案二", cssClass: "" }, { name: "④ 解決方案三", cssClass: "" }, { name: "⑤ 解決方案四", cssClass: "" } ] },
+            "lifeStage": { name: "人生階段牌陣", layoutClass: "layout-life", positions: [ { name: "① 你所處的季節", cssClass: "life-pos-0" }, { name: "② 帶來的社會生活", cssClass: "life-pos-1" }, { name: "③ 讓你振奮的事物", cssClass: "life-pos-2" }, { name: "④ 滋養你的事物", cssClass: "life-pos-3" }, { name: "⑤ 必須忍受的事物", cssClass: "life-pos-4" } ] },
+            "loveTree": { name: "愛情之樹占卜法", layoutClass: "layout-lovetree", positions: [ { name: "① 當事人", cssClass: "tree-pos-0" }, { name: "② 過去感覺與因素", cssClass: "tree-pos-1" }, { name: "③ 現在如何處理", cssClass: "tree-pos-2" }, { name: "④ 未來潛力與可能", cssClass: "tree-pos-3" }, { name: "⑤ 潛意識與環境影響", cssClass: "tree-pos-4" } ] },
+            "findPartner": { name: "尋找對象占卜法", layoutClass: "layout-partner", positions: [ { name: "① 心境", cssClass: "partner-pos-0" }, { name: "② 對象", cssClass: "partner-pos-1" }, { name: "③ 他者", cssClass: "partner-pos-2" }, { name: "④ 策略", cssClass: "partner-pos-3" }, { name: "⑤ 將來", cssClass: "partner-pos-4" } ] },
+            "friendship": { name: "友誼占卜法", layoutClass: "layout-friendship", positions: [ { name: "① 你對他的看法", cssClass: "friend-pos-0" }, { name: "② 他對你的看法", cssClass: "friend-pos-1" }, { name: "③ 你認為目前雙方關係", cssClass: "friend-pos-2" }, { name: "④ 他認為目前雙方關係", cssClass: "friend-pos-3" }, { name: "⑤ 你期望未來關係發展", cssClass: "friend-pos-4" }, { name: "⑥ 他期望未來關係發展", cssClass: "friend-pos-5" } ] },
+            "voiceOfHeart": { name: "心之聲牌陣", layoutClass: "layout-heart", positions: [ { name: "① 現在狀況", cssClass: "heart-pos-0" }, { name: "② 未來發展", cssClass: "heart-pos-1" }, { name: "③ 對方對你的內在印象", cssClass: "heart-pos-2" }, { name: "④ 對方對你的外在印象", cssClass: "heart-pos-3" }, { name: "⑤ 對方目前的狀況", cssClass: "heart-pos-4" }, { name: "⑥ 對方的期望", cssClass: "heart-pos-5" }, { name: "⑦ 你本身的狀況", cssClass: "heart-pos-6" }, { name: "⑧ 建議與行動", cssClass: "heart-pos-7" } ] },
+            "celticCross": { name: "塞爾特十字占卜法", layoutClass: "layout-celtic", positions: [ { name: "① 問題現況", cssClass: "celtic-pos-0" }, { name: "② 影響因素(阻力/助力)", cssClass: "celtic-pos-1" }, { name: "③ 理想與想法", cssClass: "celtic-pos-2" }, { name: "④ 基礎與成因", cssClass: "celtic-pos-3" }, { name: "⑤ 過去狀況", cssClass: "celtic-pos-4" }, { name: "⑥ 未來發展", cssClass: "celtic-pos-5" }, { name: "⑦ 你的自我狀況", cssClass: "celtic-pos-6" }, { name: "⑧ 外在環境與他人", cssClass: "celtic-pos-7" }, { name: "⑨ 希望或恐懼", cssClass: "celtic-pos-8" }, { name: "⑩ 最終結局", cssClass: "celtic-pos-9" } ] },
+            "yesNo": { 
+                name: "是非題占卜法", layoutClass: "layout-linear", 
+                positions: [ { name: "① 第一張牌", cssClass: "" }, { name: "② 第二張牌", cssClass: "" }, { name: "③ 第三張牌", cssClass: "" } ] 
+            },
+            "problemSolving": { 
+                name: "問題解決牌陣", layoutClass: "layout-problem", 
+                positions: [ { name: "① 問題起因", cssClass: "problem-pos-0" }, { name: "② 目前情形", cssClass: "problem-pos-1" }, { name: "③ 解決對策", cssClass: "problem-pos-2" } ] 
+            },
+            "fourElements": { 
+                name: "四要素展開法", layoutClass: "layout-elements", 
+                positions: [ { name: "① 火元素 (行動建議)", cssClass: "elem-pos-0" }, { name: "② 風元素 (言語溝通)", cssClass: "elem-pos-1" }, { name: "③ 水元素 (感情態度)", cssClass: "elem-pos-2" }, { name: "④ 土元素 (物質處理)", cssClass: "elem-pos-3" } ] 
+            },
+            "diamond": { 
+                name: "鑽石占卜法", layoutClass: "layout-diamond", 
+                positions: [ { name: "① 過去狀況", cssClass: "diamond-pos-0" }, { name: "② 現況局面(一)", cssClass: "diamond-pos-1" }, { name: "③ 現況局面(二)", cssClass: "diamond-pos-2" }, { name: "④ 未來狀況", cssClass: "diamond-pos-3" } ] 
+            },
+            "loversPyramid": { 
+                name: "戀人金字塔牌陣", layoutClass: "layout-pyramid", 
+                positions: [ { name: "① 自身", cssClass: "pyramid-pos-0" }, { name: "② 對象", cssClass: "pyramid-pos-1" }, { name: "③ 關係", cssClass: "pyramid-pos-2" }, { name: "④ 將來發展", cssClass: "pyramid-pos-3" } ] 
+            }
+        };
+
+        const tarotDeck = [
+            // ================= 大阿爾克那 (Major Arcana) =================
+            { eng: "The Fool", name: "0 愚者", img: "images/m00.jpg", 
+              keyword: "重新開始與無畏", meaning: "不要想太多，跟著直覺大膽去衝就對了，這是一段充滿未知的全新旅程。",
+              revKeyword: "盲目與魯莽", revMeaning: "過於衝動、沒有計畫的冒險可能帶來危險，請停下來評估風險再行動。" },
+            { eng: "The Magician", name: "1 魔術師", img: "images/m01.jpg", 
+              keyword: "創造力與資源", meaning: "你具備解決這個問題的所有能力與資源，現在缺的只是將想法化為實際的行動力。",
+              revKeyword: "才華濫用與騙局", revMeaning: "空有想法卻缺乏行動，或是要小心被花言巧語所欺騙，請務實一點。" },
+            { eng: "The High Priestess", name: "2 女祭司", img: "images/m02.jpg", 
+              keyword: "直覺與潛意識", meaning: "不要急著往外找答案，靜下心來退一步觀察，你的直覺會告訴你真相。",
+              revKeyword: "失去直覺與封閉", revMeaning: "你可能太過情緒化或忽視了內心的聲音。隱藏的秘密可能會浮出水面。" },
+            { eng: "The Empress", name: "3 女皇", img: "images/m03.jpg", 
+              keyword: "豐盛與孕育", meaning: "這是一個充滿愛與豐收的好兆頭，溫柔且充滿耐心地對待事物會有極佳的結果。",
+              revKeyword: "過度依賴與虛榮", revMeaning: "溺愛或過度保護反而造成壓力。可能面臨物質浪費或感情上的匱乏感。" },
+            { eng: "The Emperor", name: "4 皇帝", img: "images/m04.jpg", 
+              keyword: "秩序與掌控", meaning: "你需要更有紀律、更有邏輯地去處理這個問題，建立規則，不要感情用事。",
+              revKeyword: "專制與固執", revMeaning: "太過強勢或死板會引發反彈；也可能代表失去控制權、缺乏紀律與責任感。" },
+            { eng: "The Hierophant", name: "5 教皇", img: "images/m05.jpg", 
+              keyword: "傳統與指導", meaning: "這件事你需要聽從前輩的建議，或者遵循體制內傳統的作法會比較穩妥。",
+              revKeyword: "打破常規與盲從", revMeaning: "現有的體制或舊觀念已經不適用了，你需要突破框架，不要盲目聽從權威。" },
+            { eng: "The Lovers", name: "6 戀人", img: "images/m06.jpg", 
+              keyword: "選擇與契合", meaning: "面臨重大的選擇。這不僅跟人際關係有關，也代表你需要做出一個遵從真心的決定。",
+              revKeyword: "失和與錯誤選擇", revMeaning: "關係中出現裂痕或價值觀不合。你可能面臨誘惑，做出違背初衷的錯誤決定。" },
+            { eng: "The Chariot", name: "7 戰車", img: "images/m07.jpg", 
+              keyword: "意志力與勝利", meaning: "克服內心的矛盾與外在阻礙，憑藉強大的意志力掌控方向，你將會取得勝利。",
+              revKeyword: "失控與阻礙", revMeaning: "方向感迷失，局勢脫離你的掌控。不要勉強硬衝，否則容易翻車失敗。" },
+            { eng: "Strength", name: "8 力量", img: "images/m08.jpg", 
+              keyword: "柔性與耐心", meaning: "以柔克剛。不要硬碰硬，用你的耐心、內在的溫柔與包容去化解眼前的困難。",
+              revKeyword: "軟弱與恐懼", revMeaning: "失去自信與勇氣，被內心的恐懼或本能的慾望給吞噬，感到軟弱無力。" },
+            { eng: "The Hermit", name: "9 隱者", img: "images/m09.jpg", 
+              keyword: "內省與孤獨", meaning: "現在不是往外衝的時候，你需要一段獨處的時間來沉澱自己，尋找內心的真理。",
+              revKeyword: "孤僻與逃避", revMeaning: "過度封閉自我，拒絕外界幫助。或者是時候該結束孤立，重新回到人群中了。" },
+            { eng: "Wheel of Fortune", name: "10 命運之輪", img: "images/m10.jpg", 
+              keyword: "轉機與循環", meaning: "事情將迎來無法抗拒的改變。順應局勢的變化，命運的齒輪正在為你轉動。",
+              revKeyword: "厄運與低谷", revMeaning: "面臨突如其來的挫折或無法掌控的壞運氣。請保持耐心，低谷總會過去的。" },
+            { eng: "Justice", name: "11 正義", img: "images/m11.jpg", 
+              keyword: "平衡與因果", meaning: "保持客觀與理智，誠實面對一切。你會得到你應得的結果，講求公平是關鍵。",
+              revKeyword: "不公與偏見", revMeaning: "遭遇不公平的對待，或是你自己帶有偏見、逃避責任。小心法律或合約糾紛。" },
+            { eng: "The Hanged Man", name: "12 倒吊人", img: "images/m12.jpg", 
+              keyword: "犧牲與換位思考", meaning: "目前處於卡關狀態。你需要犧牲一點眼前的利益，換個角度看世界，會有全新體悟。",
+              revKeyword: "無謂犧牲與掙扎", revMeaning: "卡在僵局中不願改變，白白付出卻沒有回報。你需要停止無意義的鑽牛角尖。" },
+            { eng: "Death", name: "13 死神", img: "images/m13.jpg", 
+              keyword: "結束與重生", meaning: "舊有的模式必須被徹底摧毀。勇敢放手那些不再適合你的事物，才能迎來新生。",
+              revKeyword: "抗拒改變與停滯", revMeaning: "你緊抓著過去不放，害怕改變帶來的陣痛，導致情況停滯不前，無法迎來新生。" },
+            { eng: "Temperance", name: "14 節制", img: "images/m14.jpg", 
+              keyword: "調和與溝通", meaning: "尋找平衡，不要走極端。試著融合不同的意見與資源，耐心調和會得到最好的結果。",
+              revKeyword: "失衡與衝突", revMeaning: "生活節奏大亂，溝通不良導致衝突。你需要控制自己的慾望與極端的情緒。" },
+            { eng: "The Devil", name: "15 惡魔", img: "images/m15.jpg", 
+              keyword: "慾望與束縛", meaning: "你可能被物質、執念或不健康的關係綁架了。認清誘惑的本質，並試著掙脫束縛。",
+              revKeyword: "掙脫枷鎖與覺醒", revMeaning: "你開始看清有毒的關係或壞習慣，並決心斬斷這些束縛，重獲心靈自由。" },
+            { eng: "The Tower", name: "16 高塔", img: "images/m16.jpg", 
+              keyword: "毀滅與崩塌", meaning: "突如其來的意外會打破原本堅固的認知。過程雖然痛苦，但這是打掉重練的必經之路。",
+              revKeyword: "懸崖勒馬與死撐", revMeaning: "危機稍微減弱，或是你死撐著不讓搖搖欲墜的現狀崩塌，但該來的陣痛還是得面對。" },
+            { eng: "The Star", name: "17 星星", img: "images/m17.jpg", 
+              keyword: "希望與療癒", meaning: "在經歷混亂後帶來平靜。保持樂觀，充滿希望的指引正在前方，你的願望有望實現。",
+              revKeyword: "絕望與幻滅", revMeaning: "失去信心，感到悲觀與絕望。目標設定得太過遙不可及，需要重新找回務實的腳步。" },
+            { eng: "The Moon", name: "18 月亮", img: "images/m18.jpg", 
+              keyword: "不安與潛在危機", meaning: "事情沒有表面看來那麼簡單，隱藏的危機讓你感到焦慮。小心欺騙，釐清恐懼。",
+              revKeyword: "雲開見月與真相", revMeaning: "恐懼逐漸散去，隱藏的秘密或謊言被揭露。你終於能看清真相，走出迷惘。" },
+            { eng: "The Sun", name: "19 太陽", img: "images/m19.jpg", 
+              keyword: "成功與活力", meaning: "大吉大利！充滿熱情與成功，陰霾已經散去，一切都在往最棒、最明朗的方向發展。",
+              revKeyword: "延遲的成功與疲憊", revMeaning: "雖然還是會成功，但過程可能沒那麼順利，熱情稍微減退，或是快樂被打了一點折扣。" },
+            { eng: "Judgement", name: "20 審判", img: "images/m20.jpg", 
+              keyword: "覺醒與召喚", meaning: "這是一個重生的機會。過去的努力將被結算，聽從內心深處的呼喚，迎接新的階段。",
+              revKeyword: "逃避抉擇與悔恨", revMeaning: "你忽視了內心的聲音，拒絕面對過去的錯誤，導致錯失了重生的關鍵時機。" },
+            { eng: "The World", name: "21 世界", img: "images/m21.jpg", 
+              keyword: "圓滿與達成", meaning: "完美的結局！這趟旅程已達終點，你將獲得極大的成功與完成度，準備邁向下一個層次。",
+              revKeyword: "未竟之功與停滯", revMeaning: "明明只差最後一步就能成功，卻因為缺乏毅力或準備不足而卡在原地，無法圓滿。" },
+
+            // ================= 權杖牌組 (Wands) =================
+            { eng: "Ace of Wands", name: "權杖一", img: "images/w01.jpg", 
+              keyword: "新行動與靈感", meaning: "一個充滿熱情的新計畫或靈感即將展開，把握這股衝勁。",
+              revKeyword: "缺乏動力與受阻", revMeaning: "計畫難以啟動，熱情消退，或者時機尚未成熟，感到力不從心。" },
+            { eng: "Two of Wands", name: "權杖二", img: "images/w02.jpg", 
+              keyword: "計畫與遠見", meaning: "你正在籌劃未來，擁有初步的成果，需要決定是否要跨出舒適圈。",
+              revKeyword: "計畫泡湯與恐懼", revMeaning: "害怕未知而不敢行動，或是計畫缺乏長遠眼光而面臨停滯。" },
+            { eng: "Three of Wands", name: "權杖三", img: "images/w03.jpg", 
+              keyword: "擴張與探索", meaning: "你的眼界正在放寬，計畫已經啟動，是時候尋找更多的合作與發展機會。",
+              revKeyword: "發展受阻與短視", revMeaning: "海外計畫或擴張行動受挫，團隊缺乏默契，無法將眼光放遠。" },
+            { eng: "Four of Wands", name: "權杖四", img: "images/w04.jpg", 
+              keyword: "慶祝與穩定", meaning: "達到了一個穩定的里程碑，可以暫時放鬆，享受歡樂與和諧的氣氛。",
+              revKeyword: "短暫不穩與疏離", revMeaning: "基礎不夠穩固，慶祝活動可能被延遲，或者人際關係出現短暫的隔閡。" },
+            { eng: "Five of Wands", name: "權杖五", img: "images/w05.jpg", 
+              keyword: "競爭與衝突", meaning: "周遭充滿了混亂的意見與小摩擦，這是一場良性競爭，需要你展現實力。",
+              revKeyword: "惡性鬥爭與逃避", revMeaning: "衝突越演越烈變成內耗；或是你選擇逃避問題，不願參與競爭。" },
+            { eng: "Six of Wands", name: "權杖六", img: "images/w06.jpg", 
+              keyword: "勝利與榮耀", meaning: "努力獲得了認可！你將帶著驕傲與自信，享受眾人的掌聲與成功。",
+              revKeyword: "驕傲自滿與落敗", revMeaning: "太過自信導致失敗，或是別人搶走了你的功勞，得不到應有的認可。" },
+            { eng: "Seven of Wands", name: "權杖七", img: "images/w07.jpg", 
+              keyword: "防禦與堅持", meaning: "面臨挑戰與競爭者，你處於有利位置，只要堅持信念就能守住成果。",
+              revKeyword: "不堪重負與放棄", revMeaning: "敵人的攻勢太猛，你感到精疲力盡，內心動搖，防線即將崩潰。" },
+            { eng: "Eight of Wands", name: "權杖八", img: "images/w08.jpg", 
+              keyword: "迅速與進展", meaning: "事情的發展將會非常快速，沒有阻礙，請做好準備迎接接踵而來的消息。",
+              revKeyword: "延遲與匆忙失誤", revMeaning: "進度被嚴重延誤，或者因為行動太過倉促而導致溝通不良與失誤。" },
+            { eng: "Nine of Wands", name: "權杖九", img: "images/w09.jpg", 
+              keyword: "疲憊與防備", meaning: "你已經很累了，但還差最後一步。保持警戒，咬緊牙關撐過最後的考驗。",
+              revKeyword: "防衛過當與崩潰", revMeaning: "你太過神經質，對周遭充滿敵意，體力與意志力已經到達極限。" },
+            { eng: "Ten of Wands", name: "權杖十", img: "images/w10.jpg", 
+              keyword: "重擔與壓力", meaning: "你把太多的責任扛在自己肩上，壓力快把你壓垮了，需要學會放下或分擔。",
+              revKeyword: "卸下重擔與逃避", revMeaning: "你終於學會把責任分擔出去；或者相反，你直接擺爛，逃避所有責任。" },
+            { eng: "Page of Wands", name: "權杖侍者", img: "images/w11.jpg", 
+              keyword: "好奇與新消息", meaning: "帶著年輕的活力去探索新事物，可能會收到令人興奮的新計畫或消息。",
+              revKeyword: "三分鐘熱度與壞消息", revMeaning: "缺乏耐心與執行力，計畫只停留在空想。也可能帶來令人失望的消息。" },
+            { eng: "Knight of Wands", name: "權杖騎士", img: "images/w12.jpg", 
+              keyword: "衝動與熱血", meaning: "充滿行動力，說做就做！但要注意不要因為太過急躁而忽略了細節。",
+              revKeyword: "暴躁與魯莽生事", revMeaning: "行為太過莽撞不負責任，容易因為發脾氣或衝動而把事情搞砸。" },
+            { eng: "Queen of Wands", name: "權杖王后", img: "images/w13.jpg", 
+              keyword: "自信與魅力", meaning: "展現你陽光、自信且獨立的一面，用你的熱情去感染並領導周圍的人。",
+              revKeyword: "傲慢與嫉妒", revMeaning: "自信變成了自大，控制慾太強，容易因為嫉妒心而情緒化或刁難他人。" },
+            { eng: "King of Wands", name: "權杖國王", img: "images/w14.jpg", 
+              keyword: "領導與遠見", meaning: "一位充滿遠見的領導者。你有能力掌控大局，用果斷的行動去達成目標。",
+              revKeyword: "獨裁與暴躁", revMeaning: "變得專制不講理，無法接納他人意見。計畫因為過於急躁或暴力而失敗。" },
+
+            // ================= 聖杯牌組 (Cups) =================
+            { eng: "Ace of Cups", name: "聖杯一", img: "images/c01.jpg", 
+              keyword: "新情感與直覺", meaning: "愛與情感的源泉湧現。可能是一段新關係的開始，或內心獲得極大的平靜。",
+              revKeyword: "情感空虛與壓抑", revMeaning: "內心感到枯竭，拒絕接受新的感情或善意，情緒被過度壓抑。" },
+            { eng: "Two of Cups", name: "聖杯二", img: "images/c02.jpg", 
+              keyword: "結合與平等", meaning: "兩個人或兩種力量的完美結合。代表互信互愛的伴侶關係或絕佳的合作夥伴。",
+              revKeyword: "關係破裂與不對等", revMeaning: "合作關係出現裂痕，溝通不良，或是感情中出現不平等的操控與誤解。" },
+            { eng: "Three of Cups", name: "聖杯三", img: "images/c03.jpg", 
+              keyword: "歡慶與友誼", meaning: "與好朋友聚在一起慶祝的時刻。享受團隊合作的樂趣與社交的喜悅。",
+              revKeyword: "過度放縱與小團體", revMeaning: "可能代表樂極生悲、過度沉溺於享樂，或是人際關係中出現排擠與八卦。" },
+            { eng: "Four of Cups", name: "聖杯四", img: "images/c04.jpg", 
+              keyword: "冷漠與錯過", meaning: "對現狀感到無聊或不滿，導致你封閉內心，忽略了外界正在向你招手的新機會。",
+              revKeyword: "打破沉默與新機", revMeaning: "你終於從冷漠中醒來，願意接受別人的好意或抓住身邊的新機會。" },
+            { eng: "Five of Cups", name: "聖杯五", img: "images/c05.jpg", 
+              keyword: "悲傷與失落", meaning: "過度專注於失去的事物而感到悲傷，請轉過身看看，你其實還有剩下的資源與希望。",
+              revKeyword: "走出陰霾與釋懷", revMeaning: "你逐漸接受了失去的事實，看開了過去的傷痛，準備重新振作。" },
+            { eng: "Six of Cups", name: "聖杯六", img: "images/c06.jpg", 
+              keyword: "回憶與純真", meaning: "回憶起過去的美好，或是與故人重逢。帶著單純與善良的心去面對問題。",
+              revKeyword: "沉溺過去與拒絕成長", revMeaning: "太過懷念過去，不願面對現在的責任；或是終於擺脫過去的陰影向未來前進。" },
+            { eng: "Seven of Cups", name: "聖杯七", img: "images/c07.jpg", 
+              keyword: "幻想與選擇", meaning: "眼前有太多誘惑與選擇，但很多只是不切實際的幻想。你需要理清思緒，腳踏實地。",
+              revKeyword: "看清現實與果斷", revMeaning: "幻想破滅，但你也因此看清了真相。不再做白日夢，準備做出務實的選擇。" },
+            { eng: "Eight of Cups", name: "聖杯八", img: "images/c08.jpg", 
+              keyword: "追尋與放下", meaning: "現狀雖然安穩但已無法滿足你的內心。你決定拋下現有的一切，去追尋更高的精神目標。",
+              revKeyword: "逃避現實與恐懼改變", revMeaning: "明明知道該離開卻缺乏勇氣，或是盲目地逃避問題，不知道自己到底在追求什麼。" },
+            { eng: "Nine of Cups", name: "聖杯九", img: "images/c09.jpg", 
+              keyword: "滿足與美夢成真", meaning: "這是一張願望實現的牌！你將獲得物質與情感上的極大滿足，享受豐收的喜悅。",
+              revKeyword: "貪婪與樂極生悲", revMeaning: "過度追求物質享受而顯得貪婪自滿，或是願望落空，外表光鮮但內心空虛。" },
+            { eng: "Ten of Cups", name: "聖杯十", img: "images/c10.jpg", 
+              keyword: "和諧與幸福", meaning: "情感的最高境界。代表家庭和樂、團隊氣氛融洽，是一個充滿愛與安全感的環境。",
+              revKeyword: "家庭失和與假象", revMeaning: "團隊或家庭出現爭吵，幸福只存在於表面，內在其實充滿了不滿與失落。" },
+            { eng: "Page of Cups", name: "聖杯侍者", img: "images/c11.jpg", 
+              keyword: "敏感與浪漫", meaning: "用溫柔且感性的態度去面對世界，可能會出現新的戀情或藝術靈感的啟發。",
+              revKeyword: "過度敏感與情緒化", revMeaning: "過於玻璃心、愛幻想不切實際，或是在感情中表現得不成熟、容易受傷。" },
+            { eng: "Knight of Cups", name: "聖杯騎士", img: "images/c12.jpg", 
+              keyword: "浪漫與追尋", meaning: "跟隨自己的心與理想前進。這是一個浪漫的提議或一段優雅的追求過程。",
+              revKeyword: "花言巧語與欺瞞", revMeaning: "對方可能只會開空頭支票，感情不忠誠，行動過於情緒化且不負責任。" },
+            { eng: "Queen of Cups", name: "聖杯王后", img: "images/c13.jpg", 
+              keyword: "同理與傾聽", meaning: "擁有極高的直覺與同理心。你需要溫柔地關懷他人，或是信任自己的第六感。",
+              revKeyword: "過度依賴與情緒勒索", revMeaning: "同理心氾濫導致失去自我界線，或者利用情緒去勒索別人，容易陷入悲觀。" },
+            { eng: "King of Cups", name: "聖杯國王", img: "images/c14.jpg", 
+              keyword: "情緒管理與成熟", meaning: "在情感與理智間取得完美平衡。你能冷冷静理危機，同時給予他人強大的精神支持。",
+              revKeyword: "情緒失控與冷酷", revMeaning: "表面冷靜但內心壓抑，容易情緒爆發；或者變得過度冷漠、利用感情操縱他人。" },
+
+            // ================= 寶劍牌組 (Swords) =================
+            { eng: "Ace of Swords", name: "寶劍一", img: "images/s01.jpg", 
+              keyword: "突破與清晰", meaning: "理智與真理的利刃。代表突破盲點，獲得清晰的思緒或一個極具破壞力的新想法。",
+              revKeyword: "思緒混亂與濫用武力", revMeaning: "想法混亂不清，無法做出正確判斷。或是言語過於犀利傷人，引發不必要的衝突。" },
+            { eng: "Two of Swords", name: "寶劍二", img: "images/s02.jpg", 
+              keyword: "僵局與逃避", meaning: "你蒙住雙眼拒絕面對現實，導致決策陷入僵局。你必須勇敢拿下眼罩做出選擇。",
+              revKeyword: "打破僵局與面對真相", revMeaning: "僵持的局面終於有了進展，你被迫拿下眼罩看清殘酷的現實並做出選擇。" },
+            { eng: "Three of Swords", name: "寶劍三", img: "images/s03.jpg", 
+              keyword: "悲痛與受傷", meaning: "心碎與痛苦的象徵。這是一段難熬的時期，接受這個傷害，讓時間來療癒你。",
+              revKeyword: "療傷與壓抑痛苦", revMeaning: "最痛苦的階段已經過去，開始進入療癒期；或是代表你過度壓抑悲傷，不願釋懷。" },
+            { eng: "Four of Swords", name: "寶劍四", img: "images/s04.jpg", 
+              keyword: "休息與沉澱", meaning: "你太累了，現在需要按下暫停鍵。暫時退居幕後，休養生息後再重新出發。",
+              revKeyword: "被迫行動與過勞", revMeaning: "休息不足就被迫重新投入戰場，導致身心俱疲。或者代表終於結束休養，準備回歸。" },
+            { eng: "Five of Swords", name: "寶劍五", img: "images/s05.jpg", 
+              keyword: "損人不利己", meaning: "充滿爭議的勝利。為了贏得爭論可能傷害了感情，退一步海闊天空，不要為贏而贏。",
+              revKeyword: "惡性報復與結束爭端", revMeaning: "無休止的報復循環只會帶來更大的傷害。也可能代表雙方終於願意放下身段和解。" },
+            { eng: "Six of Swords", name: "寶劍六", img: "images/s06.jpg", 
+              keyword: "過渡與療傷", meaning: "正在漸漸離開痛苦的環境。雖然心中仍有憂傷，但情況正在慢慢好轉，航向平靜。",
+              revKeyword: "難以脫身與抗拒改變", revMeaning: "復原的過程受到阻礙，你無法擺脫過去的牽絆，或是因為害怕未知而拒絕往前走。" },
+            { eng: "Seven of Swords", name: "寶劍七", img: "images/s07.jpg", 
+              keyword: "策略與欺瞞", meaning: "正面衝突沒有好處，你需要用點策略、智取或是偷偷來。也要小心被他人欺騙。",
+              revKeyword: "計畫敗露與誠實面對", revMeaning: "小聰明或欺騙的行為被揭穿。此時最好的策略就是坦誠相待，面對問題的核心。" },
+            { eng: "Eight of Swords", name: "寶劍八", img: "images/s08.jpg", 
+              keyword: "受困與盲點", meaning: "你覺得自己被困住了，但其實綁住你的只是你自己的恐懼與負面想法。你是自由的。",
+              revKeyword: "重獲自由與打破盲點", revMeaning: "你終於意識到限制都是自己給的，成功解開內心的枷鎖，重新掌握人生的主導權。" },
+            { eng: "Nine of Swords", name: "寶劍九", img: "images/s09.jpg", 
+              keyword: "焦慮與噩夢", meaning: "過度擔憂與精神壓力讓你無法入眠。很多恐懼只是你腦海中放大的幻影，請尋求幫助。",
+              revKeyword: "夢醒與正視恐懼", revMeaning: "焦慮的情況稍微緩解，你開始能客觀地看待那些恐懼；或是壓力大到徹底崩潰。" },
+            { eng: "Ten of Swords", name: "寶劍十", img: "images/s10.jpg", 
+              keyword: "慘敗與谷底", meaning: "最壞的情況已經發生了，最痛苦的時刻即將結束，準備重生。",
+              revKeyword: "絕處逢生與拒絕結束", revMeaning: "谷底反彈，迎來一線生機。但也可能代表你拒絕接受失敗的事實，繼續承受不必要的折磨。" },
+            { eng: "Page of Swords", name: "寶劍侍者", img: "images/s11.jpg", 
+              keyword: "警覺與學習", meaning: "保持好奇心與敏銳的觀察力。在行動前先收集情報，理智分析狀況。",
+              revKeyword: "多疑與言辭犀利", revMeaning: "防備心太重，容易捕風捉影。溝通時尖酸刻薄，或是到處散播未經證實的八卦。" },
+            { eng: "Knight of Swords", name: "寶劍騎士", img: "images/s12.jpg", 
+              keyword: "迅速與衝動", meaning: "思考敏捷且行動迅速。但有時過於急躁與直接，容易變成魯莽，請三思而後行。",
+              revKeyword: "衝動壞事與缺乏耐性", revMeaning: "完全不經大腦的橫衝直撞，導致事情被搞砸。言語極度傷人且不顧後果。" },
+            { eng: "Queen of Swords", name: "寶劍王后", img: "images/s13.jpg", 
+              keyword: "冷靜與理性", meaning: "不被感情左右，用清晰的邏輯與嚴格的標準來審視問題。直言不諱是你的武器。",
+              revKeyword: "冷酷無情與偏激", revMeaning: "過於毒舌與嚴苛，完全不顧他人感受。可能因為過去的創傷而變得極度封閉與刻薄。" },
+            { eng: "King of Swords", name: "寶劍國王", img: "images/s14.jpg", 
+              keyword: "權威與邏輯", meaning: "具備高度的專業知識與邏輯分析能力。遇到問題時，請用絕對的理智與公正去裁決。",
+              revKeyword: "濫用權力與不公", revMeaning: "利用智商或職威去壓榨他人，變得專橫跋扈。邏輯淪為狡辯，失去公正的判斷力。" },
+
+            // ================= 錢幣牌組 (Pentacles) =================
+            { eng: "Ace of Pentacles", name: "錢幣一", img: "images/p01.jpg", 
+              keyword: "實質新機會", meaning: "一個具體的、與金錢或工作有關的新機會出現了，將為為你帶來實質的豐收。",
+              revKeyword: "錯失良機與貪婪", revMeaning: "機會因為缺乏實際計畫而溜走。或是過度看重金錢，導致財務規劃出現問題。" },
+            { eng: "Two of Pentacles", name: "錢幣二", img: "images/p02.jpg", 
+              keyword: "彈性與波動", meaning: "你正在多個項目或收支之間努力維持平衡。保持彈性，應對環境的波動。",
+              revKeyword: "失衡與財務透支", revMeaning: "多頭馬車讓你分身乏術，財務或時間管理已經失控，無法再維持原有的平衡。" },
+            { eng: "Three of Pentacles", name: "錢幣三", img: "images/p03.jpg", 
+              keyword: "專業與合作", meaning: "這是一張強調團隊合作的牌。發揮各自的專業技能，共同建構一個穩固的基礎。",
+              revKeyword: "團隊失和與品質低落", revMeaning: "合作關係破裂，成員不願妥協。或是工作敷衍了事，缺乏專業精神與規劃。" },
+            { eng: "Four of Pentacles", name: "錢幣四", img: "images/p04.jpg", 
+              keyword: "掌控與吝嗇", meaning: "你將現有的資源抓得很緊，雖然帶來安全感，但也可能因為過度保守而阻礙了發展。",
+              revKeyword: "打破固執與財務流失", revMeaning: "你願意打開心胸分享資源；或者相反，過度揮霍導致原本緊抓的財富流失。" },
+            { eng: "Five of Pentacles", name: "錢幣五", img: "images/p05.jpg", 
+              keyword: "匱乏與孤立", meaning: "正經歷財務或精神上的困難時期，感到孤立無援。請放下自尊，尋求外界的協助。",
+              revKeyword: "重見光明與財務改善", revMeaning: "最困難的時期即將過去，資源與援助終於到來，身心狀況正在逐漸好轉。" },
+            { eng: "Six of Pentacles", name: "錢幣六", img: "images/p06.jpg", 
+              keyword: "慷慨與援助", meaning: "財務狀況達到平衡。如果你有能力，請慷慨助人；如果你需要幫助，資源將會降臨。",
+              revKeyword: "給予不公與自私", revMeaning: "資源分配不均，或是施恩圖報。你可能面臨財務剝削，或者自己變得極度自私。" },
+            { eng: "Seven of Pentacles", name: "錢幣七", img: "images/p07.jpg", 
+              keyword: "耐心與評估", meaning: "辛勤耕耘後進入等待期。停下腳步評估目前的投資報酬率，耐心等待果實成熟。",
+              revKeyword: "投資失利與缺乏耐心", revMeaning: "努力卻沒有得到應有的回報，感到挫折。或是太急於求成，導致半途而廢。" },
+            { eng: "Eight of Pentacles", name: "錢幣八", img: "images/p08.jpg", 
+              keyword: "專注與技藝", meaning: "全神貫注於手邊的工作。不斷磨練自己的技能與細節，踏實的努力將帶來回報。",
+              revKeyword: "枯燥乏味與粗製濫造", revMeaning: "對重複性的工作感到厭煩。缺乏專注力，只想走捷徑，導致成品粗糙缺乏品質。" },
+            { eng: "Nine of Pentacles", name: "錢幣九", img: "images/p09.jpg", 
+              keyword: "富足與獨立", meaning: "享受自己努力得來的豐盛與獨立。這是一個財務自由、充滿自信與品味的舒適狀態。",
+              revKeyword: "過度揮霍與依賴", revMeaning: "沉迷於物質享受而過度消費，或是為了維持表面的奢華而失去真正的財務自由。" },
+            { eng: "Ten of Pentacles", name: "錢幣十", img: "images/p10.jpg", 
+              keyword: "傳承與富裕", meaning: "物質的最高成就。代表家族企業、穩固的基業與長期的財務安全，充滿傳統價值。",
+              revKeyword: "基業動搖與家庭糾紛", revMeaning: "傳統的價值觀或家產面臨挑戰。可能出現爭產、投資失敗或家庭內部的不和睦。" },
+            { eng: "Page of Pentacles", name: "錢幣侍者", img: "images/p11.jpg", 
+              keyword: "務實與學習", meaning: "踏實地學習新技能或理財知識。雖然進展緩慢，但每一步都走得非常穩固。",
+              revKeyword: "懶散與計畫不切實際", revMeaning: "好高騖遠但不願付出努力。缺乏金錢觀念，學習態度散漫，計畫無法落地。" },
+            { eng: "Knight of Pentacles", name: "錢幣騎士", img: "images/p12.jpg", 
+              keyword: "勤奮與可靠", meaning: "或許不夠浪漫或靈活，但絕對是最勤奮可靠的人。按部就班，堅持到底就是勝利。",
+              revKeyword: "死板與停滯不前", revMeaning: "太過固執與無趣，害怕任何改變。或者相反地，變得怠惰不負責，放棄了堅持。" },
+            { eng: "Queen of Pentacles", name: "錢幣王后", img: "images/p13.jpg", 
+              keyword: "滋養與豐盛", meaning: "懂得享受生活且具備實用主義。用豐富的資源與溫暖的態度去照顧身邊的人事物。",
+              revKeyword: "物質至上與疏於照顧", revMeaning: "變得極度拜金或吝嗇。可能因為忙於世俗事物而忽略了自己或家人的身心健康。" },
+            { eng: "King of Pentacles", name: "錢幣國王", img: "images/p14.jpg", 
+              keyword: "成就與穩重", meaning: "事業有成的企業家精神。你擁有了穩固的物質基礎，用務實與穩重的態度掌控一切。",
+              revKeyword: "貪腐與固步自封", revMeaning: "唯利是圖，為了金錢不擇手段。思想僵化不願接受新事物，或是事業面臨財務危機。" }
+        ];
+
+        let currentSpread = null; 
+        let drawStep = 0; 
+        let shuffledDeck = []; 
+        let pickedCards = [];
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        function renderSuggestionButtons(simpleKey, deepKey) {
+            const spreadsEl = document.getElementById("suggestedSpreads");
+            if (!spreadsData[simpleKey]) simpleKey = "daily";
+            if (!spreadsData[deepKey]) deepKey = "coreDirect";
+
+            const simple = spreadsData[simpleKey];
+            const deep = spreadsData[deepKey];
+
+            spreadsEl.innerHTML = `
+                <div class="spread-btn" style="border-color: #2ecc71; background-color: rgba(46, 204, 113, 0.2);" onclick="startDrawing('${simpleKey}')">
+                    <div class="spread-title" style="color: #2ecc71;">🍃 簡易解析</div>
+                    <div class="spread-desc" style="color: #fff;">${simple.name}</div>
+                </div>
+                <div class="spread-btn" style="border-color: #e74c3c; background-color: rgba(231, 76, 60, 0.2);" onclick="startDrawing('${deepKey}')">
+                    <div class="spread-title" style="color: #e74c3c;">🔥 深入探討</div>
+                    <div class="spread-desc" style="color: #fff;">${deep.name}</div>
+                </div>
+            `;
+        }
+
+        async function suggestSpreads() {
+            const questionText = document.getElementById("questionInput").value.trim();
+            if (questionText === "") return alert("請先輸入問題！");
+
+            const suggestionBox = document.getElementById("suggestionBox");
+            const reasonEl = document.getElementById("suggestionReason");
+            const spreadsEl = document.getElementById("suggestedSpreads");
+
+            suggestionBox.style.display = "block";
+            reasonEl.innerHTML = "🔮 <i>大師正在為您連結宇宙運算中，請稍候...</i>";
+            spreadsEl.innerHTML = ""; 
+
+            const promptText = `
+            使用者問題：「${questionText}」。
+            請從以下牌陣中，精準判斷並推薦一個最適合的「簡易版」牌陣 和 一個「深入版」牌陣：
+            - daily (每日一占，1張牌，適合運勢)
+            - classic (經典時間，3張牌，適合過去/現在/未來發展)
+            - coreDirect (直指核心，4張牌，適合尋找問題盲點與對策)
+            - actionPlan (行動計畫，5張牌，適合需要具體解決方案)
+            - lifeStage (人生階段，5張牌，適合靈性與人生狀態探索)
+            - findPartner (尋找對象，5張牌，適合單身求桃花)
+            - friendship (友誼占卜，6張牌，適合朋友/同事人際關係)
+            - loveTree (愛情之樹，5張牌，適合戀愛關係與潛力)
+            - loveCross (戀愛十字，5張牌，適合雙方關係解析)
+            - voiceOfHeart (心之聲牌陣，8張牌，適合深入探討對方心思與印象)
+            - celticCross (塞爾特十字，10張牌，適合超複雜、全方位的重大人生決策)
+
+            【重要篩選原則】：
+            1. 如果使用者的問題跟「愛情、喜歡、伴侶、離婚、結婚、在一起、第三者、前任、復合」等【感情】相關，
+               你的「深入版牌陣 (deepKey)」必須從「loveTree」、「loveCross」、「voiceOfHeart」、「findPartner」中擇一推薦。
+            2. 如果問題非常重大複雜（如轉職、訴訟、長遠人生），可以考慮推薦「celticCross」。
+
+            請用簡短、溫暖、閨蜜般大實話的語氣給出推薦理由。
+            `;
+
+            let response;
+            let success = false;
+            let lastErrorMsg = "";
+
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    console.log(`[推薦牌陣] 正在嘗試呼叫模型: ${currentModel}...`);
+                    try {
+                        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${GEMINI_API_KEY}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ 
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ],
+                                generationConfig: { 
+                                    responseMimeType: "application/json",
+                                    responseSchema: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            simpleKey: { type: "STRING" },
+                                            deepKey: { type: "STRING" },
+                                            reason: { type: "STRING" }
+                                        },
+                                        required: ["simpleKey", "deepKey", "reason"]
+                                    }
+                                }
+                            })
+                        });
+
+                        if (response.ok) {
+                            success = true;
+                            break; 
+                        } else {
+                            lastErrorMsg = `狀態碼 ${response.status}`;
+                        }
+                    } catch (fetchErr) {
+                        lastErrorMsg = "網路連線異常";
+                    }
+                }
+
+                if (!success) {
+                    throw new Error(`所有模型皆無回應 (最後錯誤: ${lastErrorMsg})`);
+                }
+
+                const data = await response.json();
+                if (!data.candidates || !data.candidates[0].content) throw new Error("AI 回傳格式空白");
+
+                const resultText = data.candidates[0].content.parts[0].text;
+                const result = JSON.parse(resultText);
+                
+                reasonEl.innerHTML = `🌟 ${result.reason}`;
+                renderSuggestionButtons(result.simpleKey, result.deepKey);
+
+            } catch (err) {
+                console.error("🚨 智囊團全數陣亡，罷工原因：", err);
+                const loveKeywords = ["他", "喜歡", "愛", "離婚", "老婆", "在一起", "復合", "桃花", "娶", "嫁", "小三", "小四"];
+                const isLoveQuestion = loveKeywords.some(keyword => questionText.includes(keyword));
+
+                if (isLoveQuestion) {
+                    reasonEl.innerHTML = `🌟 大師神念受干擾 (${err.message})，但算出此題關乎情緣，為您推薦：`;
+                    renderSuggestionButtons("loveTree", "loveCross");
+                } else {
+                    reasonEl.innerHTML = `🌟 大師神念受干擾 (${err.message})，為您推薦最萬用的法陣：`;
+                    renderSuggestionButtons("classic", "coreDirect");
+                }
+            }
+        }
+
+        async function startDrawing(spreadKey) {
+            const questionText = document.getElementById("questionInput").value.trim();
+            if (questionText === "") {
+                alert("逼逼！請先輸入你的具體問題！");
+                return;
+            }
+
+            drawStep = 0;
+            pickedCards = [];
+
+            currentSpread = spreadsData[spreadKey];
+            document.getElementById("setupSection").style.display = "none";
+            document.getElementById("drawSection").style.display = "block";
+            
+            const displayQ = document.getElementById("displayQuestion");
+            displayQ.innerText = `🔮 你的問題：「${questionText}」\n(使用牌陣：${currentSpread.name})`;
+
+            const slotsContainer = document.getElementById("slotsContainer");
+            slotsContainer.innerHTML = ""; 
+            slotsContainer.className = currentSpread.layoutClass; 
+
+            for(let i = 0; i < currentSpread.positions.length; i++) {
+                let posData = currentSpread.positions[i];
+                let boxHTML = `
+                <div id="cardBox${i}" class="card-container empty-slot ${posData.cssClass}">
+                    <div class="position-title">【 ${posData.name} 】</div>
+                    <img id="cardImg${i}" class="card-image" src="images/card-empty.jpg" alt="空白">
+                    <div id="cardName${i}" class="card-name" style="color:#bdc3c7;">等待抽取...</div>
+                    <div id="cardMeaning${i}" class="card-meaning"></div>
+                </div>`;
+                slotsContainer.innerHTML += boxHTML;
+            }
+
+            document.getElementById("instructionPrompt").innerText = "🌌 宇宙洗牌中...";
+            document.getElementById("instructionPrompt").style.display = "block";
+            await sleep(800); 
+
+            shuffledDeck = [...tarotDeck].sort(() => Math.random() - 0.5);
+            const spreadArea = document.getElementById("spreadArea");
+            spreadArea.innerHTML = ""; 
+            
+            for(let i = 0; i < 78; i++) {
+                let cardImg = document.createElement("img");
+                cardImg.src = "images/card-back.jpg";
+                cardImg.className = "spread-card";
+                cardImg.onclick = () => pickCard(i, cardImg); 
+                spreadArea.appendChild(cardImg);
+            }
+            spreadArea.style.display = "flex";
+            document.getElementById("instructionPrompt").innerText = `👉 請憑直覺抽取第一張牌：【 ${currentSpread.positions[0].name} 】`;
+        }
+
+        async function pickCard(index, cardElement) {
+            const totalCardsNeeded = currentSpread.positions.length;
+            if (cardElement.classList.contains("picked") || drawStep >= totalCardsNeeded) return;
+            
+            cardElement.classList.add("picked");
+            let isReversed = Math.random() > 0.5;
+            pickedCards.push({ ...shuffledDeck[index], isReversed: isReversed });
+
+            let slotIndex = drawStep;
+            let box = document.getElementById("cardBox" + slotIndex);
+            
+            box.classList.remove("empty-slot");
+            box.classList.add("shuffling"); 
+            document.getElementById("cardImg" + slotIndex).src = "images/card-back.jpg";
+            document.getElementById("cardName" + slotIndex).innerText = "已抽取 (未翻開)";
+            document.getElementById("cardName" + slotIndex).style.color = "#8e44ad";
+            
+            await sleep(300);
+            box.classList.remove("shuffling");
+
+            drawStep++; 
+            const promptEl = document.getElementById("instructionPrompt");
+            
+            if (drawStep < totalCardsNeeded) {
+                promptEl.innerText = `👉 請憑直覺抽取下一張牌：【 ${currentSpread.positions[drawStep].name} 】`;
+            } else {
+                promptEl.innerText = "✨ 抽取完畢，大師正在為您翻牌解讀...";
+                await sleep(800);
+                document.getElementById("spreadArea").style.display = "none";
+                promptEl.style.display = "none";
+                await revealCards();
+            }
+        }
+
+        async function revealCards() {
+            const totalCards = currentSpread.positions.length;
+
+            for(let i = 0; i < totalCards; i++) {
+                let box = document.getElementById("cardBox" + i);
+                box.classList.add("flip-out");
+                await sleep(250); 
+                
+                let card = pickedCards[i];
+                let imgEl = document.getElementById("cardImg" + i);
+                imgEl.src = card.img;
+                if (card.isReversed) {
+                    imgEl.classList.add("reversed");
+                } else {
+                    imgEl.classList.remove("reversed");
+                }
+                
+                document.getElementById("cardName" + i).innerText = card.name + (card.isReversed ? " (逆位)" : " (正位)");
+                // 👇 魔法在這裡：判斷是否逆位，抓取對應的 meaning 或 revMeaning
+                document.getElementById("cardMeaning" + i).innerText = card.isReversed ? card.revMeaning : card.meaning;
+                document.getElementById("cardImg" + i).style.filter = "none";
+                
+                box.classList.remove("flip-out");
+                await sleep(400); 
+            }
+
+            document.getElementById("synthesisBox").style.display = "block";
+            document.getElementById("synthesisText").innerHTML = "🔮 <i>大師正在連結宇宙運算中，請稍候...</i>";
+            document.getElementById("synthesisBox").scrollIntoView({ behavior: "smooth" });
+
+            const questionText = document.getElementById("questionInput").value.trim();
+            let spreadInfoText = "";
+            for(let i=0; i < totalCards; i++) {
+                // 👇 抓取正確的關鍵字餵給 AI 大師
+                let kw = pickedCards[i].isReversed ? pickedCards[i].revKeyword : pickedCards[i].keyword;
+                spreadInfoText += `${i+1}. 位置【${currentSpread.positions[i].name}】：抽到「${pickedCards[i].name}」(${pickedCards[i].isReversed ? '逆位' : '正位'}，核心含義：${kw})\n`;
+            }
+
+            let extraInstruction = "";
+            if (currentSpread.name === "每日一占") {
+                extraInstruction = "【特別任務】：因為這是「每日一占」，請務必具體描繪出這張牌在「今天」會對應到的「具體生活場景」、「即將發生的事件」或「真實生活中的寓意」，越有畫面感越好，不要只給抽象概念。";
+            } else if (currentSpread.name === "是非題占卜法") {
+                extraInstruction = "【特別任務】：因為這是「是非題占卜法」，請務必在開頭直接給出明確的「肯定 (Yes)」、「否定 (No)」或「不確定/中性」的答案，接著再綜合這三張正逆位牌面解釋原因。";
+            }
+
+            const promptText = `
+            你現在是一位結合了「專業塔羅占卜師」與「暖心心理輔導師」特質的命理導師。
+
+            【你的角色設定與說話風格】
+            1. 語氣幽默風趣、直白不修飾、一針見血，但內心保持善良、溫暖且絕對客觀。
+            2. 像是一位非常懂你、跟你說大實話的心理諮商閨蜜，拒絕高高在上的教訓態度，回應要具體化、接地氣但不浮誇。
+            3. 【重要】請絕對不要提及任何武俠、功法、招式等字眼，保持現代占卜與心理引導的專業感。
+            4. 解讀個別牌卡的時候可以根據牌卡圖案補充整體牌陣的解讀。
+
+            【大師的專業解牌法則】
+            1. 嚴格扣緊使用者的「具體問題」，拒絕模稜兩可的心靈雞湯，給出明確、清晰的局勢診斷（好/壞/有沒有機會）。
+            2. 注重「整組牌陣的流動性與整體故事性」：請綜合觀察這些牌之間的能量消長、元素互補或衝突，將它們串連成一個完整情境。
+            3. 🌟【進階逆位解讀法則】：正位代表能量順暢發揮、外顯且客觀；逆位絕非單純等於「絕對的壞」或「完全相反的意思」，而是代表能量狀態的改變。遇到逆位牌時，請務必從以下四種邏輯中挑選最適合的來解讀：
+               (1) 能量受阻或延遲：該牌原本的力量無法順利發揮，遇到瓶頸。
+               (2) 能量內化：情況轉為私密，或是內在心態的調整、盲點與自我修復。
+               (3) 過度或不足：原有的特質走極端（例如過度掌控或失去權力）。
+               (4) 走向反面：傳統解法，直接反映正位的負面狀態。
+            4. 針對使用者的問題方向，請主動給予深度的「補充延伸回答」。
+            5. 在結尾的【大師總結】中，無論牌面多糟糕，都必須指引一條可以挽回局面、調整心態的破局建議。
+
+            使用者的問題是：「${questionText}」
+            使用者選擇的牌陣是：「${currentSpread.name}」
+            
+            他們抽到的牌如下：
+            ${spreadInfoText}
+
+            請為使用者進行專業且溫暖的綜合解讀。
+            ${extraInstruction}
+
+            排版要求（非常重要）：
+            1. 請【絕對不要】使用任何 HTML 顏色屬性 (color) 或 style 標籤，單純輸出文字即可。
+            2. 每個位置的解讀標題，請統一使用 <h3>【位置名稱】：牌名 (正/逆位)</h3> 標籤。
+            3. 重點字句請單純使用 <b>標籤</b> 強調。
+            4. 【絕對不要使用 # 井字號來當作標題】。
+            5. 段落之間請保持緊湊，不要加入過多的空白行。
+            6. 【重要】在所有個別牌義解析完畢後，請務必在最下方加上 <h3>【大師總結】</h3>，為這整組牌陣給出一個宏觀的結論與最終建議。
+            `;
+
+            let response;
+            let success = false;
+
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    if (i > 0) {
+                        document.getElementById("synthesisText").innerHTML = "🔮 <i>大師正在為您連結宇宙運算中，請稍候...</i>";
+                        await sleep(2000); 
+                    }
+                    try {
+                        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`, {
+                            method: "POST", 
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ 
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ]
+                            })
+                        });
+                        if (response.ok) { success = true; break; }
+                    } catch (fetchErr) { console.warn(`${currentModel} 連線失敗:`, fetchErr); }
+                }
+
+                if (!success || !response) {
+                    throw new Error("所有大師目前都在忙線中，宇宙能量暫時耗盡，請稍後再試！");
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let aiText = "", buffer = "";
+                document.getElementById("synthesisText").innerHTML = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    let lines = buffer.split("\n");
+                    buffer = lines.pop(); 
+                    
+                    for (let line of lines) {
+                        if (line.startsWith("data: ")) {
+                            let str = line.substring(6); 
+                            if (str.trim() === "[DONE]") continue;
+                            try {
+                                let data = JSON.parse(str);
+                                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                                    aiText += data.candidates[0].content.parts[0].text;
+                                    let html = aiText.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+                                    html = html.replace(/#{1,6}\s?/g, ""); // 消滅井字號
+                                    html = html.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>"); 
+                                    html = html.replace(/\n{3,}/g, "\n\n");
+                                    document.getElementById("synthesisText").innerHTML = html;
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+            } catch (err) {
+                document.getElementById("synthesisText").innerHTML = `⚠️ <b>連結中斷或發生錯誤：</b><br>${err.message}<br><br>💡 <b>請確認金鑰是否有效，或稍後再試。</b>`;
+            }
+        }
+
+        async function drawFollowUpCard() {
+            const followUpInput = document.getElementById("followUpInput").value.trim();
+            if (followUpInput === "") {
+                alert("逼逼！請先輸入你的追問內容！");
+                return;
+            }
+
+            const btn = document.getElementById("followUpBtn");
+            btn.style.display = "none"; 
+            document.getElementById("followUpInput").disabled = true;
+
+            const box = document.getElementById("followUpCardBox");
+            box.style.display = "flex";
+            
+            await sleep(300);
+            box.classList.remove("empty-slot");
+            box.classList.add("shuffling");
+            const imgEl = document.getElementById("followUpCardImg");
+            imgEl.src = "images/card-back.jpg";
+            document.getElementById("followUpCardName").innerText = "宇宙洗牌中...";
+            document.getElementById("followUpCardName").style.color = "#8e44ad";
+            
+            await sleep(800);
+            box.classList.remove("shuffling");
+            
+            let remainingDeck = shuffledDeck.filter(c => !pickedCards.some(pc => pc.name === c.name));
+            if(remainingDeck.length === 0) remainingDeck = [...tarotDeck]; 
+            
+            let randomIndex = Math.floor(Math.random() * remainingDeck.length);
+            let followUpCard = remainingDeck[randomIndex];
+            let isReversed = Math.random() > 0.5;
+            followUpCard.isReversed = isReversed;
+
+            box.classList.add("flip-out");
+            await sleep(250); 
+            
+            imgEl.src = followUpCard.img;
+            if (isReversed) imgEl.classList.add("reversed");
+            else imgEl.classList.remove("reversed");
+            
+            document.getElementById("followUpCardName").innerText = followUpCard.name + (isReversed ? " (逆位)" : " (正位)");
+            // 👇 魔法在這裡
+            document.getElementById("followUpCardMeaning").innerText = isReversed ? followUpCard.revMeaning : followUpCard.meaning;
+            
+            box.classList.remove("flip-out");
+            await sleep(400);
+
+            await askFollowUpAI(followUpInput, followUpCard);
+        }
+
+        async function askFollowUpAI(question, card) {
+            const textEl = document.getElementById("followUpText");
+            textEl.innerHTML = "🔮 <i>大師正在為您的追問連結宇宙運算中，請稍候...</i>";
+            textEl.scrollIntoView({ behavior: "smooth" });
+
+            const mainQuestion = document.getElementById("questionInput").value.trim();
+            let spreadInfoText = "";
+            for(let i=0; i < pickedCards.length; i++) {
+                spreadInfoText += `${i+1}. 位置【${currentSpread.positions[i].name}】：抽到「${pickedCards[i].name}」(${pickedCards[i].isReversed ? '逆位' : '正位'})\n`;
+            }
+
+            const promptText = `
+            你現在是一位結合了「專業塔羅占卜師」與「暖心心理輔導師」特質的命理導師。
+            
+            【前情提要】
+            使用者原本的問題是：「${mainQuestion}」
+            原本抽到的牌陣結果是：
+            ${spreadInfoText}
+
+            【現在的追加提問】
+            使用者聽完原本的解讀後，提出了追加問題：「${question}」
+            為此，使用者又額外抽取了一張「追加指示牌」：「${card.name}」(${card.isReversed ? '逆位' : '正位'}，核心含義：${card.isReversed ? card.revKeyword : card.keyword})。
+
+            【大師的追加解牌任務】
+            1. 請延續你幽默風趣、溫暖直白、閨蜜般大實話的說話風格。
+            2. 根據原本的牌陣背景，結合這張全新的「追加指示牌」，針對使用者的「追加問題」給出明確、具體的解答。
+            3. 🌟【進階逆位解讀法則】：正位代表能量順暢、外顯；逆位代表能量阻塞、內斂。遇到逆位時，請依據「(1)能量受阻延遲」、「(2)能量內化(轉為內心課題)」、「(3)過度或不足走極端」或「(4)走向反面」這四種邏輯，挑選最適合的來深度解析。
+            4. 排版要求：單純輸出文字即可，【絕對不要使用 # 井字號來當作標題】，也請勿使用 HTML 顏色或 style 標籤。重點字句請用 <b>標籤</b> 強調。
+            `;
+
+            let response;
+            let success = false;
+
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    if (i > 0) {
+                        textEl.innerHTML = "🔮 <i>大師正在為您的追問連結宇宙運算中，請稍候...</i>";
+                        await sleep(2000); 
+                    }
+                    try {
+                        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`, {
+                            method: "POST", 
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ 
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ]
+                            })
+                        });
+                        if (response.ok) { success = true; break; }
+                    } catch (fetchErr) { console.warn(`${currentModel} 連線失敗:`, fetchErr); }
+                }
+
+                if (!success || !response) throw new Error("所有大師目前都在忙線中，宇宙能量暫時耗盡，請稍後再試！");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let aiText = "", buffer = "";
+                textEl.innerHTML = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    let lines = buffer.split("\n");
+                    buffer = lines.pop(); 
+                    
+                    for (let line of lines) {
+                        if (line.startsWith("data: ")) {
+                            let str = line.substring(6); 
+                            if (str.trim() === "[DONE]") continue;
+                            try {
+                                let data = JSON.parse(str);
+                                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                                    aiText += data.candidates[0].content.parts[0].text;
+                                    let html = aiText.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+                                    html = html.replace(/#{1,6}\s?/g, ""); // 殺死井字號
+                                    html = html.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>"); 
+                                    html = html.replace(/\n{3,}/g, "\n\n");
+                                    textEl.innerHTML = html;
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+            } catch (err) {
+                textEl.innerHTML = `⚠️ <b>連結中斷或發生錯誤：</b><br>${err.message}`;
+            }
+        }
+ // ================= 星空引擎 (保證背景運作) =================
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let bgGradient;
+
+        function resizeCanvas() { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+            bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGradient.addColorStop(0, "#050914"); 
+            bgGradient.addColorStop(1, "#1a252f"); 
+        }
+        resizeCanvas(); 
+        window.addEventListener('resize', resizeCanvas);
+        
+        const stars = [];
+        for (let i = 0; i < 400; i++) { 
+            stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5, opacity: Math.random(), fadeSpeed: (Math.random() - 0.5) * 0.03 });
+        }
+        const shootingStars = [];
+
+        function drawUniverse() {
+            ctx.fillStyle = bgGradient; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            stars.forEach(star => {
+                ctx.beginPath(); ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`; ctx.fill();
+                star.opacity += star.fadeSpeed; 
+                if(star.opacity <= 0.1 || star.opacity >= 0.8) star.fadeSpeed *= -1; 
+            });
+
+            // 🌟 浪漫慢速版流星
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                let ss = shootingStars[i];
+                ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.length, ss.y + ss.length);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${ss.opacity})`; ctx.lineWidth = 1.5; ctx.stroke();
+                
+                // 速度套用設定值，並讓它消失得慢一點 (原本是 0.02，改成 0.006 讓它拖長)
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.006; 
+                if (ss.opacity <= 0) shootingStars.splice(i, 1);
+            }
+            
+            // 降低流星出現的頻率 (0.015)，並大幅降低速度 (2~4)
+            if (Math.random() < 0.015) {
+                shootingStars.push({ 
+                    x: Math.random() * canvas.width * 1.5, 
+                    y: Math.random() * (canvas.height / 2) - 100, 
+                    length: Math.random() * 60 + 30, // 流星尾巴長度
+                    speed: Math.random() * 2 + 2,    // ✨ 速度大幅調降，這就是浪漫的關鍵！
+                    opacity: 0.8                     // 一開始不要太刺眼，呈現朦朧美
+                });
+            }
+            requestAnimationFrame(drawUniverse);
+        }
+        drawUniverse();
+    </script>
+</body>
+</html>
