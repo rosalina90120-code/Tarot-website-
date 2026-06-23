@@ -1,0 +1,6 @@
+node_modules/
+.env
+data/
+文字檔.txt
+.agents/
+.claude/

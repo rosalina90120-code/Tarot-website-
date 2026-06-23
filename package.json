@@ -1,0 +1,16 @@
+{
+  "name": "tarot",
+  "version": "1.0.0",
+  "description": "神秘塔羅占卜 — a zh-TW tarot divination web app",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.5.2"
+  }
+}

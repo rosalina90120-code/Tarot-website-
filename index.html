@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>神秘塔羅占卜 </title>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* 🌟 終極魔法：強制移除全站所有元素的粗體設定 */
+        * {
+            font-weight: normal !important;
+        }
+       body {
+            min-height: 100vh;
+            background-color: #050914; /* 重複的已刪除 */
+            color: #ecf0f1; 
+            font-family: 'Kiwi Maru', serif; /* 🌟 魔法在這裡：換成奇異果圓體 */
+            text-align: center; 
+            padding: 30px 20px 50px; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+        /* 🌟 星空畫布設定 */
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        h1 { color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.8); font-size: 36px; margin-bottom: 20px;}
+        
+        #setupSection { 
+            background-color: rgba(44, 62, 80, 0.15); /* 透明度大幅提高 */
+            padding: 30px; 
+            border-radius: 15px; 
+            margin: 0 auto 30px; 
+            max-width: 950px; 
+            box-shadow: none; /* 徹底拿掉陰影 */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* 換成極淡的細白邊框 */
+            backdrop-filter: blur(6px); 
+        }
+        /* 🌟 2. 輸入問題的框框：透明背景、細白框、白字 */
+        .question-input { 
+            width: 85%; 
+            padding: 15px; 
+            font-size: 18px; 
+            border-radius: 8px; 
+            border: 1px solid rgba(255, 255, 255, 0.5); /* 氣質細白框 */
+            margin-bottom: 25px; 
+            background-color: transparent; /* 抽掉原本的白色底色 */
+            color: #ecf0f1; /* 讓打出來的字變成白色 */
+            transition: all 0.3s ease; 
+        }
+        .question-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .question-input:focus { 
+            outline: none; 
+            border-color: #ffffff; 
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.3); 
+        }
+        
+/* 🌟 大師專屬推薦按鈕：透明白框、懸浮發光 */
+        .magic-btn {
+            background-color: transparent; /* 拿掉底色，完全透明 */
+            color: #ecf0f1; /* 文字變白色 */
+            border: 1px solid rgba(255, 255, 255, 0.4); /* 氣質細白框 */
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px); /* 微微的毛玻璃感 */
+            letter-spacing: 1px;
+        }
+
+        /* 🌟 滑鼠經過時的發光特效 */
+        .magic-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* 微微透出淡淡白光 */
+            border-color: #ffffff; /* 邊框變純白 */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* 散發白色光暈 */
+            transform: translateY(-2px); /* 輕盈地往上浮起一點點 */
+        }
+
+        .spread-options { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;}
+        /* 🌟 牌陣選擇按鈕：透明白框、毛玻璃質感 */
+        .spread-btn {
+            background-color: transparent; /* 拿掉厚重的深色底，變透明 */
+            color: #ecf0f1;
+            border: 1px solid rgba(255, 255, 255, 0.4); /* 換成氣質細白框 */
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 220px;
+            backdrop-filter: blur(4px); /* 微微的透視模糊感 */
+        }
+
+        /* 🌟 滑鼠經過時的發光浮動特效 */
+        .spread-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* 微微透出淡淡白光 */
+            border-color: #ffffff; /* 邊框變純白 */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* 散發迷人白色光暈 */
+            transform: translateY(-3px); /* 輕盈地往上浮起 */
+        }
+        .spread-title { font-size: 20px; font-weight: normal; color: #f1c40f; margin-bottom: 8px; }
+        .spread-desc { font-size: 14px; color: #bdc3c7; }
+
+        /* 🌟 最上排常用牌陣：強制一排 3 個，看起來更大氣 */
+        .top-spreads {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* 🌟 分類摺疊選單設定 (超美毛玻璃質感) */
+        .spread-category {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+            text-align: left; /* 讓標題靠左 */
+        }
+        
+        /* 展開時邊框發光 */
+        .spread-category[open] {
+            border-color: rgba(241, 196, 15, 0.5); /* 展開時帶點神聖的金色邊框 */
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* 🌟 分類標題按鈕：標題強制置中 */
+        .spread-category summary {
+            padding: 15px 45px; /* 左右增加空間，不讓文字撞到箭頭 */
+            font-size: 18px;
+            font-weight: bold;
+            color: #ecf0f1;
+            cursor: pointer;
+            list-style: none; 
+            display: flex;
+            justify-content: center; /* 🔮 魔法在這裡：讓大標題強制置中 */
+            align-items: center;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            position: relative; /* 🔮 魔法在這裡：作為箭頭絕對定位的基準 */
+        }
+        
+        .spread-category summary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 隱藏 Safari 的原生箭頭 */
+        .spread-category summary::-webkit-details-marker { display: none; }
+
+        /* 自訂一個有質感的下拉箭頭，並固定在最右側 */
+        .spread-category summary::after {
+            content: "▼";
+            font-size: 14px;
+            color: #f1c40f;
+            transition: transform 0.3s ease;
+            position: absolute; /* 🔮 魔法在這裡：讓箭頭脫離排版 */
+            right: 25px; /* 固定在距離右邊 25px 的位置 */
+        }
+        /* 展開時箭頭轉向 */
+        .spread-category[open] summary::after {
+            transform: rotate(180deg);
+        }
+        
+        .spread-category summary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 隱藏 Safari 的原生箭頭 */
+        .spread-category summary::-webkit-details-marker { display: none; }
+
+        /* 自訂一個有質感的下拉箭頭 */
+        .spread-category summary::after {
+            content: "▼";
+            font-size: 14px;
+            color: #f1c40f;
+            transition: transform 0.3s ease;
+        }
+        /* 展開時箭頭轉向 */
+        .spread-category[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        /* 🌟 展開後的內容區塊 */
+        .category-content {
+            padding: 20px 25px 30px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* 🌟 純圖示圓形按鈕風格 (仿 HeroUI 質感) */
+        .icon-only-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background-color: rgba(255, 255, 255, 0.1); color: #f1c40f; font-size: 18px;
+            cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
+            outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); flex-shrink: 0;
+        }
+        .icon-only-btn:hover { background-color: rgba(255, 255, 255, 0.25); transform: scale(1.05); }
+        .icon-only-btn:active { transform: scale(0.95); }
+
+        #drawSection { display: none; } 
+        .user-question-display { font-size: 22px; color: #2ecc71; margin: 10px 0 20px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .instruction-prompt { font-size: 24px; color: #f39c12; font-weight: bold; margin: 20px 0; display: none; text-shadow: 0 2px 5px rgba(0,0,0,0.8); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .spread-area {
+            display: none; flex-wrap: wrap; justify-content: center; max-width: 900px;
+            margin: 20px auto 40px; padding: 25px 15px; background: rgba(44, 62, 80, 0.6);
+            border-radius: 15px; border: 2px dashed #7f8c8d;
+        }
+        .spread-card {
+            width: 40px; height: 68px; margin: 0 -12px 10px 0; 
+            cursor: pointer; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.2s, opacity 0.3s;
+            border-radius: 4px; box-shadow: -2px 2px 5px rgba(0,0,0,0.5); object-fit: cover;
+        }
+        .spread-card:hover { transform: translateY(-15px) scale(1.1); z-index: 10; position: relative; filter: brightness(1.2); }/* 🌟 你的問題顯示：換成與星空和諧的星光銀藍色，並帶有微微光暈 */
+        .user-question-display { 
+            font-size: 22px; 
+            color: #d6eaf8; /* 柔和的高級星光銀藍色 */
+            margin: 10px 0 25px; 
+            font-weight: bold; 
+            text-shadow: 0 0 10px rgba(214, 234, 248, 0.4); /* 拿掉生硬黑影，換成柔和光暈 */
+            letter-spacing: 1px; /* 字距稍微拉開一點點，更有氣質 */
+        }
+        .spread-card.picked { opacity: 0; pointer-events: none; transform: translateY(-30px) scale(0.5); }
+
+        #slotsContainer { margin: 0 auto 40px; }
+        .layout-linear { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .layout-cross {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto;
+            gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto;
+        }
+        .cross-pos-0 { grid-column: 1; grid-row: 2; } 
+        .cross-pos-1 { grid-column: 3; grid-row: 2; } 
+        .cross-pos-2 { grid-column: 2; grid-row: 1; } 
+        .cross-pos-3 { grid-column: 2; grid-row: 2; } 
+        .cross-pos-4 { grid-column: 2; grid-row: 3; } 
+        
+        .layout-life { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 1000px; margin: 0 auto; }
+        .life-pos-0 { grid-column: 1 / 5; grid-row: 1; justify-self: center; } 
+        .life-pos-1 { grid-column: 1; grid-row: 2; }
+        .life-pos-2 { grid-column: 2; grid-row: 2; }
+        .life-pos-3 { grid-column: 3; grid-row: 2; }
+        .life-pos-4 { grid-column: 4; grid-row: 2; }
+
+        .layout-lovetree { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .tree-pos-0 { grid-column: 2; grid-row: 2; } 
+        .tree-pos-1 { grid-column: 1; grid-row: 1; } 
+        .tree-pos-2 { grid-column: 2; grid-row: 1; } 
+        .tree-pos-3 { grid-column: 3; grid-row: 1; } 
+        .tree-pos-4 { grid-column: 2; grid-row: 3; } 
+        
+        .layout-core { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .core-pos-0 { grid-column: 2; grid-row: 1; } 
+        .core-pos-1 { grid-column: 1; grid-row: 2; } 
+        .core-pos-2 { grid-column: 2; grid-row: 2; } 
+        .core-pos-3 { grid-column: 3; grid-row: 2; } 
+
+        .layout-partner { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .partner-pos-0 { grid-column: 2; grid-row: 2; } 
+        .partner-pos-1 { grid-column: 1; grid-row: 1; } 
+        .partner-pos-2 { grid-column: 3; grid-row: 1; } 
+        .partner-pos-3 { grid-column: 1; grid-row: 3; } 
+        .partner-pos-4 { grid-column: 3; grid-row: 3; } 
+
+        .layout-friendship { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .friend-pos-0 { grid-column: 1; grid-row: 1; } 
+        .friend-pos-1 { grid-column: 1; grid-row: 2; } 
+        .friend-pos-2 { grid-column: 2; grid-row: 1; } 
+        .friend-pos-3 { grid-column: 2; grid-row: 2; } 
+        .friend-pos-4 { grid-column: 3; grid-row: 1; } 
+        .friend-pos-5 { grid-column: 3; grid-row: 2; } 
+
+        .layout-heart { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .heart-pos-0 { grid-column: 2; grid-row: 2; } 
+        .heart-pos-1 { grid-column: 2; grid-row: 3; } 
+        .heart-pos-2 { grid-column: 1; grid-row: 2; } 
+        .heart-pos-3 { grid-column: 3; grid-row: 2; } 
+        .heart-pos-4 { grid-column: 1; grid-row: 1; } 
+        .heart-pos-5 { grid-column: 3; grid-row: 3; } 
+        .heart-pos-6 { grid-column: 3; grid-row: 1; } 
+        .heart-pos-7 { grid-column: 1; grid-row: 3; } 
+
+        .layout-celtic { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto auto; gap: 15px; justify-content: center; max-width: 1100px; margin: 0 auto; align-items: start;}
+        .celtic-pos-0 { grid-column: 2; grid-row: 2; } 
+        .celtic-pos-1 { grid-column: 2; grid-row: 3; } 
+        .celtic-pos-2 { grid-column: 2; grid-row: 1; } 
+        .celtic-pos-3 { grid-column: 2; grid-row: 4; } 
+        .celtic-pos-4 { grid-column: 3; grid-row: 2 / span 2; } 
+        .celtic-pos-5 { grid-column: 1; grid-row: 2 / span 2; } 
+        .celtic-pos-6 { grid-column: 4; grid-row: 4; } 
+        .celtic-pos-7 { grid-column: 4; grid-row: 3; } 
+        .celtic-pos-8 { grid-column: 4; grid-row: 2; } 
+        .celtic-pos-9 { grid-column: 4; grid-row: 1; } 
+
+        /* 🌟 新增：是非題占卜法 (橫向微弧形排列，重現圖片質感) */
+        .layout-yesno { display: flex; justify-content: center; gap: 20px; max-width: 900px; margin: 0 auto; }
+        .yesno-pos-0 { margin-top: 25px; } /* 左邊牌微降 */
+        .yesno-pos-1 { margin-top: 0px; }  /* 中間牌最高 */
+        .yesno-pos-2 { margin-top: 25px; } /* 右邊牌微降 */
+
+        /* 🌟 新增：問題解決牌陣 (垂直排列，由下到上 1->2->3) */
+        .layout-problem { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .problem-pos-0 { grid-row: 3; } /* 1 原因 */
+        .problem-pos-1 { grid-row: 2; } /* 2 情形 */
+        .problem-pos-2 { grid-row: 1; } /* 3 對策 */
+
+        /* 🌟 新增：四要素展開法 (四角排列) */
+        .layout-elements { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 600px; margin: 0 auto; }
+        .elem-pos-0 { grid-column: 2; grid-row: 2; } /* 1 火 */
+        .elem-pos-1 { grid-column: 1; grid-row: 1; } /* 2 風 */
+        .elem-pos-2 { grid-column: 2; grid-row: 1; } /* 3 水 */
+        .elem-pos-3 { grid-column: 1; grid-row: 2; } /* 4 土 */
+
+        /* 🌟 新增：鑽石占卜法 (菱形排列) */
+        .layout-diamond { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .diamond-pos-0 { grid-column: 2; grid-row: 3; } /* 1 過去 */
+        .diamond-pos-1 { grid-column: 3; grid-row: 2; } /* 2 現況(右) */
+        .diamond-pos-2 { grid-column: 1; grid-row: 2; } /* 3 現況(左) */
+        .diamond-pos-3 { grid-column: 2; grid-row: 1; } /* 4 未來 */
+
+        /* 🌟 新增：戀人金字塔牌陣 (金字塔排列) */
+        .layout-pyramid { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 15px; justify-content: center; max-width: 900px; margin: 0 auto; }
+        .pyramid-pos-0 { grid-column: 2; grid-row: 2; } /* 1 自身 */
+        .pyramid-pos-1 { grid-column: 1; grid-row: 2; } /* 2 對象 */
+        .pyramid-pos-2 { grid-column: 3; grid-row: 2; } /* 3 關係 */
+        .pyramid-pos-3 { grid-column: 2; grid-row: 1; } /* 4 將來 */
+
+
+        /* 🌟 1. 統一所有的卡牌框設定 (包含主牌面與追加指引) */
+        .card-container {
+            width: 240px; 
+            /* 統一的玻璃質感 */
+            background-color: rgba(255, 255, 255, 0.05) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(8px);
+            color: #ecf0f1;
+            border-radius: 12px; 
+            padding: 15px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            /* 統一金色的頂部細邊框，讓追加卡片與主牌面完全一致 */
+            border-top: 3px solid #f1c40f !important; 
+            
+            /* 翻牌動畫靈魂 */
+            transition: transform 0.4s ease-in-out, opacity 0.4s !important; 
+            transform-style: preserve-3d; 
+            margin: 0 auto;
+        }
+
+        /* 🌟 2. 空白牌槽的樣式 (等待抽牌時的虛線框) */
+        .card-container.empty-slot { 
+            background-color: rgba(255, 255, 255, 0.02) !important; 
+            border: 1px dashed rgba(255, 255, 255, 0.3) !important; 
+            border-top: 1px dashed rgba(255, 255, 255, 0.3) !important; 
+            box-shadow: none; 
+        }
+        .card-container.empty-slot .card-image { opacity: 0.4; filter: grayscale(100%); }
+        .card-image.reversed { transform: rotate(180deg); }
+        
+        /* 🌟 3. 牌名與標題顏色純淨化 (星空透明版) */
+        .position-title { font-size: 16px; margin-bottom: 10px; font-weight: bold; background: rgba(255,255,255,0.15) !important; color: #fff; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2) !important;}
+        .card-image { width: 140px; height: 220px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; }
+        .card-name { font-size: 18px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.3) !important; padding-bottom: 5px; width: 100%; color: #f1c40f !important; text-shadow: 0 0 5px rgba(241,196,15,0.3);}
+        .card-meaning { font-size: 13px; line-height: 1.5; text-align: justify; width: 100%; color: #ecf0f1; }
+
+        /* 🌟 追加提問：多張牌卡列 + 可累積多回合的對話串 */
+        .followup-cards-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 25px; }
+        .followup-round { margin-bottom: 30px; padding-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.15); text-align: center; }
+        .followup-question { color: #2ecc71; font-weight: bold; font-size: 17px; margin-bottom: 5px; text-align: left; }
+        .followup-instruction { color: #f39c12; font-weight: bold; margin: 15px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .followup-fan-area {
+            display: flex; flex-wrap: wrap; justify-content: center; max-width: 700px;
+            margin: 10px auto 20px; padding: 20px 15px; background: rgba(44, 62, 80, 0.5);
+            border-radius: 15px; border: 2px dashed #7f8c8d;
+        }
+        .followup-count-btn {
+            background: rgba(255,255,255,0.08); color: #ecf0f1; border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 16px; border-radius: 20px; cursor: pointer; margin: 0 4px; font-size: 14px; transition: 0.2s;
+        }
+        .followup-count-btn:hover { background: rgba(255,255,255,0.18); }
+        .followup-count-btn.active { background: #2980b9; border-color: #3498db; color: #fff; font-weight: bold; }
+
+        /* 🌟 4. 翻牌動畫的旋轉設定 */
+        .flip-out { 
+            transform: rotateY(90deg) scale(0.95); 
+            opacity: 0.3; 
+        }
+
+    /* 🌟 解讀大框框：超高透明度、無陰影、四周極淡細白框 (取代原本的左邊粗黃線) */
+        .synthesis-section { 
+            display: none; 
+            background-color: rgba(255, 255, 255, 0.05); /* 透明度調到極高 */
+            color: #ecf0f1; max-width: 850px; 
+            margin: 40px auto 0; padding: 35px; border-radius: 15px; 
+            box-shadow: none; /* 徹底拿掉陰影 */
+            text-align: left; 
+            border: 1px solid rgba(255, 255, 255, 0.2); /* 氣質細白邊框 */
+            backdrop-filter: blur(6px); 
+        }
+
+        /* 🌟 調整後的標題：更大、更開闊、更有作文層次感 */
+        .synthesis-title { 
+            color: #f1c40f;         /* 標題保持原本的金色，更有辨識度 */
+            font-size: 32px;        /* 把字體從 26px 放大到 32px */
+            font-weight: bold; 
+            margin-bottom: 30px;    /* 拉開與下面內文的距離 (30px 是個很舒服的間距) */
+            text-align: center;     /* 置中看起來更像正式標題 */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 加上一條極細的線，區分標題與內容 */
+            padding-bottom: 15px;
+        }
+        
+        /* 🌟 解讀框裡的標題：拿掉藍色/黃色，變純白並加上微微發光感 */
+        .synthesis-content h3 { color: #ffffff; font-size: 22px; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 8px; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
+        
+        .synthesis-content { font-size: 18px; line-height: 1.6; white-space: pre-wrap; color: #ffffff !important; }
+        
+        /* 🌟 解讀框裡的重點字：強制套用深黃色 */
+        .synthesis-content b { 
+            color: #f1c40f !important; /* 加上 !important 強制黃色顯現 */
+            font-weight: normal !important; /* 配合你全站無粗體的喜好，維持正常細度 */
+            text-shadow: none; 
+        }
+
+        /* 🌟 讓摺疊分類裡面的按鈕與文字，重新回到完美的置中對齊 */
+        .category-content .spread-btn {
+            text-align: center; /* 讓說明文字置中 */
+        }
+        
+        .category-content .spread-title {
+            display: flex;
+            justify-content: center; /* 讓標題與小圖示完美置中 */
+            align-items: center;
+            gap: 5px; /* 讓圖示跟文字有一點點舒服的距離 */
+        }
+        /* 🌟 懸浮的召喚按鈕 (平常縮在螢幕最右邊) */
+        .helper-toggle {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.4);
+            border-right: none;
+            padding: 20px 8px;
+            border-radius: 10px 0 0 10px;
+            cursor: pointer;
+            z-index: 100;
+            writing-mode: vertical-lr; /* 讓文字變成直排 */
+            letter-spacing: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            backdrop-filter: blur(4px);
+            transition: 0.3s ease;
+        }
+        .helper-toggle:hover { background-color: rgba(241, 196, 15, 0.4); padding-right: 15px; }
+
+        /* 🌟 抽屜面板本身 (預設藏在畫面右邊外面) */
+        .helper-sidebar {
+            position: fixed; 
+            right: -350px; /* 🔮 魔法：設定成負數，把它藏到畫面外面 */
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 320px; 
+            background-color: rgba(15, 23, 36, 0.95); /* 用深色不透明底色，避免跟背景字疊在一起 */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: none;
+            border-radius: 15px 0 0 15px; 
+            padding: 25px 20px;
+            z-index: 101; /* 層級最高 */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.6);
+            transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* 滑順的抽屜動畫 */
+        }
+
+        /* 加上 active 類別時，就會滑出來 */
+        .helper-sidebar.active { right: 0; }
+
+        /* 關閉按鈕 (X) */
+        .close-helper {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #ecf0f1;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .close-helper:hover { transform: scale(1.2); color: #e74c3c; }
+
+        /* 裡面原本的元件設定保留 */
+        .helper-title { color: #f1c40f; font-size: 18px; text-align: left; border-bottom: 1px dashed rgba(255,255,255,0.3); padding-bottom: 10px; margin-top: 10px; }
+        .helper-textarea { width: 100%; height: 140px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: #ecf0f1; padding: 12px; font-family: inherit; font-size: 15px; resize: none; box-sizing: border-box; line-height: 1.5; }
+        .helper-textarea:focus { outline: none; border-color: #f1c40f; }
+        .helper-btn { background-color: rgba(241, 196, 15, 0.15); color: #f1c40f; border: 1px solid #f1c40f; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        .helper-btn:hover { background-color: rgba(241, 196, 15, 0.3); }
+        .helper-result { font-size: 15px; color: #ecf0f1; text-align: left; line-height: 1.6; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; max-height: 250px; overflow-y: auto; }
+        /* 如果使用者的螢幕太小（例如手機或平板），就把它藏起來避免擋住主畫面 */
+        @media (max-width: 1400px) {
+            .helper-sidebar { display: none; }
+        }
+
+        .helper-title {
+            color: #f1c40f;
+            font-size: 18px;
+            text-align: left;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .helper-textarea {
+            width: 100%;
+            height: 140px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            color: #ecf0f1;
+            padding: 12px;
+            font-family: inherit; /* 繼承你可愛的奇異果字體 */
+            font-size: 15px;
+            resize: none; /* 不讓使用者亂拉大小 */
+            box-sizing: border-box;
+            line-height: 1.5;
+        }
+        
+        .helper-textarea:focus { outline: none; border-color: #f1c40f; }
+
+        .helper-btn {
+            background-color: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+            border: 1px solid #f1c40f;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .helper-btn:hover { background-color: rgba(241, 196, 15, 0.3); }
+
+        /* 原本的 helper-result，請替換成這樣 👇 */
+        .helper-result { 
+            position: relative; /* 🔮 必須加這行，按鈕才能定位在右上角 */
+            font-size: 15px; 
+            color: #ecf0f1; 
+            text-align: left; 
+            line-height: 1.6; 
+            background: rgba(0,0,0,0.4); 
+            padding: 45px 15px 15px 15px; /* 上方留 45px 的空間給複製按鈕 */
+            border-radius: 8px; 
+            max-height: 250px; 
+            overflow-y: auto; 
+        }
+
+        /* 🌟 新增：複製按鈕的絕美外觀 */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ecf0f1;
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(4px);
+        }
+        .copy-btn:hover {
+            background: rgba(241, 196, 15, 0.2);
+            border-color: #f1c40f;
+            color: #f1c40f;
+        }
+
+        /* ⭐ 你的故事：右上角召喚按鈕 */
+        .story-btn {
+            position: fixed; top: 18px; right: 18px; z-index: 90;
+            background-color: rgba(241, 196, 15, 0.12); color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.4); border-radius: 30px;
+            padding: 10px 18px; font-size: 16px; font-family: inherit; cursor: pointer;
+            backdrop-filter: blur(6px); transition: 0.3s; letter-spacing: 1px;
+        }
+        .story-btn:hover {
+            background-color: rgba(241, 196, 15, 0.3); border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.5); transform: translateY(-2px);
+        }
+
+        /* 🔓 擁有者解鎖：故意做得不顯眼，左下角小圖示 */
+        .owner-unlock-btn {
+            position: fixed; bottom: 14px; left: 14px; z-index: 90;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.15); font-size: 14px; cursor: pointer;
+            backdrop-filter: blur(4px); transition: 0.3s;
+        }
+        .owner-unlock-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .owner-unlock-btn.unlocked { color: #2ecc71; border-color: rgba(46, 204, 113, 0.5); }
+
+        /* 🔑 自帶 API Key：跟解鎖按鈕並排 */
+        .own-key-btn {
+            position: fixed; bottom: 14px; left: 54px; z-index: 90;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.15); font-size: 14px; cursor: pointer;
+            backdrop-filter: blur(4px); transition: 0.3s;
+        }
+        .own-key-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .own-key-btn.active { color: #3498db; border-color: rgba(52, 152, 219, 0.6); }
+
+        /* 🎫 邀請碼：再跟前兩顆並排 */
+        .guest-access-btn {
+            position: fixed; bottom: 14px; left: 94px; z-index: 90;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.15); font-size: 14px; cursor: pointer;
+            backdrop-filter: blur(4px); transition: 0.3s;
+        }
+        .guest-access-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .guest-access-btn.active { color: #f1c40f; border-color: rgba(241, 196, 15, 0.6); }
+
+        /* 你的故事：彈出視窗（手機也適用）*/
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 110;
+            background: rgba(5, 9, 20, 0.75); backdrop-filter: blur(3px);
+            justify-content: center; align-items: flex-start;
+            padding: 40px 16px; overflow-y: auto;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            position: relative; width: 92%; max-width: 600px; margin: auto;
+            background-color: rgba(15, 23, 36, 0.96);
+            border: 1px solid rgba(255,255,255,0.2); border-top: 3px solid #f1c40f;
+            border-radius: 15px; padding: 26px 22px; text-align: left;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        .modal-title { color: #f1c40f; font-size: 22px; margin: 0 0 6px; text-align: center; }
+        .modal-sub { color: #bdc3c7; font-size: 13px; text-align: center; margin-bottom: 18px; }
+        .close-modal {
+            position: absolute; top: 14px; right: 16px; background: transparent; border: none;
+            color: #ecf0f1; font-size: 22px; cursor: pointer; transition: 0.2s;
+        }
+        .close-modal:hover { color: #e74c3c; transform: scale(1.2); }
+        .record-card {
+            background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+            border-left: 3px solid #f1c40f; border-radius: 10px;
+            padding: 14px 16px; margin-bottom: 14px; backdrop-filter: blur(6px);
+        }
+        .record-time { color: #8e9bad; font-size: 12px; }
+        .record-q { color: #d6eaf8; font-size: 17px; margin: 4px 0 2px; text-shadow: 0 0 8px rgba(214,234,248,0.3); }
+        .record-spread { color: #f1c40f; font-size: 13px; margin-bottom: 8px; }
+        .record-cards { color: #ecf0f1; font-size: 13px; line-height: 1.7; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 6px; }
+        .rev { color: #e59866; }
+        details.reading { margin-top: 8px; }
+        details.reading summary { cursor: pointer; color: #bdc3c7; font-size: 13px; outline: none; }
+        details.reading summary:hover { color: #fff; }
+        .reading-body { font-size: 14px; line-height: 1.7; color: #fff; white-space: pre-wrap; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.2); }
+        .reading-body b { color: #f1c40f; }
+        .record-del {
+            margin-top: 10px; background: transparent; border: 1px solid rgba(231,76,60,0.5);
+            color: #e74c3c; border-radius: 6px; padding: 4px 12px; font-size: 13px; font-family: inherit; cursor: pointer; transition: 0.2s;
+        }
+        .record-del:hover { background: rgba(231,76,60,0.15); }
+        .modal-footer { text-align: center; margin-top: 6px; }
+        .clear-all {
+            background: transparent; color: #bdc3c7; border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 8px; padding: 8px 18px; font-size: 14px; font-family: inherit; cursor: pointer; transition: 0.2s;
+        }
+        .clear-all:hover { color: #e74c3c; border-color: rgba(231,76,60,0.5); }
+        .empty-note { color: #8e9bad; text-align: center; padding: 30px 10px; font-size: 15px; }
+
+        /* 列表卡片：可點擊進入完整視窗 */
+        .record-card { cursor: pointer; transition: 0.2s; }
+        .record-card:hover { background-color: rgba(255,255,255,0.09); border-color: rgba(241,196,15,0.45); }
+        .record-more { color: #f1c40f; font-size: 13px; text-align: right; margin-top: 8px; }
+        .up { color: #2ecc71; }
+        .rev { color: #e59866; }
+        .fu-badge { color: #3498db; font-size: 12px; margin-left: 6px; }
+
+        /* 完整視窗（詳細）：大字、好讀，小螢幕也清楚 */
+        #storyDetailOverlay { z-index: 120; }
+        .detail-box { max-width: 680px; }
+        .back-btn {
+            background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #ecf0f1;
+            border-radius: 8px; padding: 6px 14px; font-size: 14px; font-family: inherit; cursor: pointer; margin-bottom: 14px;
+        }
+        .back-btn:hover { border-color: #f1c40f; color: #f1c40f; }
+        .detail-time { color: #8e9bad; font-size: 13px; }
+        .detail-q { color: #d6eaf8; font-size: 22px; margin: 6px 0; text-shadow: 0 0 8px rgba(214,234,248,0.3); }
+        .detail-spread { color: #f1c40f; font-size: 15px; margin-bottom: 14px; }
+        .detail-cards { background: rgba(0,0,0,0.25); border-radius: 8px; padding: 8px 14px; margin-bottom: 8px; }
+        .detail-card-row { display: flex; gap: 12px; padding: 6px 0; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .detail-card-row:last-child { border-bottom: none; }
+        .dc-pos { color: #bdc3c7; min-width: 96px; flex-shrink: 0; }
+        .dc-name { color: #ecf0f1; }
+        .detail-h { color: #fff; font-size: 18px; margin: 22px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 6px; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
+        .detail-reading { font-size: 17px; line-height: 1.95; color: #fff; white-space: pre-wrap; }
+        .detail-reading b { color: #f1c40f; }
+        .detail-followup { background: rgba(255,255,255,0.04); border-left: 3px solid #3498db; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; }
+        .fu-q { color: #d6eaf8; font-size: 16px; margin-bottom: 4px; }
+        .fu-card { color: #f1c40f; font-size: 14px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <button class="helper-toggle" onclick="toggleHelper()">✨大師幫你問</button>
+
+    <button class="story-btn" onclick="openStory()">⭐ 你的故事</button>
+
+    <button id="ownerUnlockBtn" class="owner-unlock-btn" onclick="unlockOwner()" title="擁有者解鎖">🔓</button>
+
+    <button id="ownKeyBtn" class="own-key-btn" onclick="toggleOwnKey()" title="使用我自己的 Gemini API Key">🔑</button>
+
+    <button id="guestAccessBtn" class="guest-access-btn" onclick="enterGuestCode()" title="輸入邀請碼">🎫</button>
+
+    <div id="helperSidebar" class="helper-sidebar">
+        <button class="close-helper" onclick="toggleHelper()">✖</button>
+        <div class="helper-title">✨ 不知道怎麼問？大師幫你</div>
+        <textarea id="storyInput" class="helper-textarea" placeholder="請盡情傾吐你的煩惱、故事或前因後果...大師會幫你抓出最精準的占卜問題！"></textarea>
+        <button id="helperBtn" class="helper-btn" onclick="clarifyQuestion()">🪄 大師幫你梳理問題</button>
+        <div id="helperResult" class="helper-result" style="display:none;"></div>
+    </div>
+
+    <div id="storyOverlay" class="modal-overlay" onclick="if(event.target===this) closeStory()">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeStory()">✖</button>
+            <h2 class="modal-title">⭐ 你的故事</h2>
+            <div class="modal-sub">你問過的每一個問題、抽過的每一張牌，都記在這裡。</div>
+            <div id="recordList"></div>
+            <div class="modal-footer">
+                <button class="clear-all" onclick="clearStory()">🗑 清除全部紀錄</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="storyDetailOverlay" class="modal-overlay" onclick="if(event.target===this) closeDetail()">
+        <div class="modal-box detail-box">
+            <button class="close-modal" onclick="closeDetail()">✖</button>
+            <button class="back-btn" onclick="closeDetail()">← 返回列表</button>
+            <div id="detailBody"></div>
+        </div>
+    </div>
+
+    <div id="allUprightOverlay" class="modal-overlay" onclick="if(event.target===this) closeAllUpright()">
+        <div class="modal-box detail-box">
+            <button class="close-modal" onclick="closeAllUpright()">✖</button>
+            <h2 class="modal-title">🌟 全部正位解釋</h2>
+            <div class="modal-sub">把這組牌全部當作正位來看，純粹對照參考用，不影響你原本的解讀。</div>
+            <div id="allUprightBody"></div>
+        </div>
+    </div>
+
+    <h1>🔮 神秘塔羅占卜</h1>
+    
+    <div id="setupSection">
+        <div id="continuationBadge" style="display:none; margin: 0 auto 15px; max-width: 600px; background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.5); border-radius: 10px; padding: 10px 16px; color: #d6eaf8; font-size: 14px;">
+            🔗 接續自：「<span id="continuationLabel"></span>」
+            <button type="button" onclick="clearContinuation()" style="margin-left: 10px; background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 13px; text-decoration: underline;">取消接續</button>
+        </div>
+        <input type="text" id="questionInput" class="question-input" placeholder="請先輸入你的具體問題 (大師會依此為您解惑)...">
+
+        <div style="margin-bottom: 25px;">
+            <button class="magic-btn" onclick="suggestSpreads()">
+                ✨ 讓大師為我挑選牌陣
+            </button>
+        </div>
+
+        <div id="suggestionBox" style="display: none; background-color: rgba(142, 68, 173, 0.15); padding: 20px; border-radius: 10px; border: 1px dashed #9b59b6; margin-bottom: 30px;">
+            <div id="suggestionReason" style="font-size: 16px; color: #f1c40f; margin-bottom: 15px; font-weight: bold; line-height: 1.5;"></div>
+            <div id="suggestedSpreads" class="spread-options" style="margin-bottom: 0;"></div>
+        </div>
+
+        <div style="font-size: 16px; margin-bottom: 15px; color: #bdc3c7; border-top: 1px solid #34495e; padding-top: 20px;">或者，您也可以自行選擇適用的牌陣：</div>
+        
+        <div style="font-size: 16px; margin-bottom: 20px; color: #f1c40f; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;"> 常用牌陣推薦：</div>
+        
+        <div class="spread-options top-spreads">
+            <div class="spread-btn" onclick="startDrawing('daily')">
+                <div class="spread-title">☀️ 每日一占</div>
+                <div class="spread-desc">運勢專用 (1張牌)<br>預測今日的具體場景與運勢</div>
+            </div>
+            <div class="spread-btn" onclick="startDrawing('classic')">
+                <div class="spread-title">⏳ 經典時間</div>
+                <div class="spread-desc">通用型 (3張牌)<br>解析過去、現在、未來的發展</div>
+            </div>
+            <div class="spread-btn" onclick="startDrawing('yesNo')">
+                <div class="spread-title">⭕ 是非題占卜</div>
+                <div class="spread-desc">單一問題 (3張牌)<br>快速得到肯定或否定的明確答案</div>
+            </div>
+        </div>
+
+        <div style="font-size: 16px; margin-bottom: 15px; color: #bdc3c7; margin-top: 20px;"> 探索更多專業牌陣分類：</div>
+        
+        <details class="spread-category">
+            <summary>💖 戀愛與感情專區</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('loveTree')">
+                        <div class="spread-title">🌳 愛情之樹</div>
+                        <div class="spread-desc">感情專用 (5張牌)<br>簡明準確的戀愛過去與潛力</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('loveCross')">
+                        <div class="spread-title">❤️ 戀愛十字</div>
+                        <div class="spread-desc">感情專用 (5張牌)<br>深入分析雙方心態與外界影響</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('findPartner')">
+                        <div class="spread-title">🔍 尋找對象</div>
+                        <div class="spread-desc">感情專用 (5張牌)<br>幫你做好準備，再出發追愛</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('loversPyramid')">
+                        <div class="spread-title">🔺 戀人金字塔</div>
+                        <div class="spread-desc">感情專用 (4張牌)<br>深入了解雙方關係與未來走向</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('voiceOfHeart')">
+                        <div class="spread-title">💗 心之聲牌陣</div>
+                        <div class="spread-desc">感情專用 (8張牌)<br>多角度解讀在意之人的關係建言</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="spread-category">
+            <summary>💼 事業與問題解決</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('coreDirect')">
+                        <div class="spread-title">🗡️ 直指核心</div>
+                        <div class="spread-desc">解惑專用 (4張牌)<br>直擊問題核心與破局對策</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('problemSolving')">
+                        <div class="spread-title">🗝️ 問題解決牌陣</div>
+                        <div class="spread-desc">突破困境 (3張牌)<br>釐清起因與現況，找出突破對策</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('actionPlan')">
+                        <div class="spread-title">🏃 行動計畫</div>
+                        <div class="spread-desc">執行專用 (5張牌)<br>完善自己，找出具體解決之道</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('fourElements')">
+                        <div class="spread-title">🍀 四要素展開</div>
+                        <div class="spread-desc">全方位 (4張牌)<br>從行動、言語、感情、物質四面剖析</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="spread-category">
+            <summary>🌱 人生探索與運勢</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('lifeStage')">
+                        <div class="spread-title">🌱 人生階段</div>
+                        <div class="spread-desc">靈性專用 (5張牌)<br>探索當下的生命季節與修行</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('diamond')">
+                        <div class="spread-title">💎 鑽石占卜法</div>
+                        <div class="spread-desc">通用型 (4張牌)<br>簡潔豐富地看透過去、現在與未來</div>
+                    </div>
+                    <div class="spread-btn" onclick="startDrawing('celticCross')">
+                        <div class="spread-title">✝️ 塞爾特十字</div>
+                        <div class="spread-desc">專業高階 (10張牌)<br>全方位宏觀解析複雜問題的因果</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="spread-category">
+            <summary>🤝 人際與友誼</summary>
+            <div class="category-content">
+                <div class="spread-options">
+                    <div class="spread-btn" onclick="startDrawing('friendship')">
+                        <div class="spread-title">🤝 友誼占卜</div>
+                        <div class="spread-desc">人際專用 (6張牌)<br>輕鬆明白他人的心意與盲點</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+    </div><div id="drawSection">
+        <div id="displayQuestion" class="user-question-display"></div>
+        <div id="instructionPrompt" class="instruction-prompt"></div>
+        <div id="spreadArea" class="spread-area"></div>
+        <div id="slotsContainer"></div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="resetReading()" style="background-color: #7f8c8d; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.3s;" onmouseover="this.style.background='#95a5a6'" onmouseout="this.style.background='#7f8c8d'">← 返回重新選擇</button>
+        </div>
+
+        <div id="synthesisBox" class="synthesis-section">
+            <div class="synthesis-title">✨ 專屬大師綜合解讀</div>
+            <div id="synthesisText" class="synthesis-content"></div>
+            <div style="text-align: center; margin: 6px 0 20px;">
+                <button class="spread-btn" style="background-color: #8e44ad; border-color: #9b59b6; width: auto; padding: 8px 20px; font-size: 14px;" onclick="showAllUprightReading()">🌟 全部正位解釋</button>
+            </div>
+            <br>
+
+            <div id="followUpSection" style="margin-top: 40px; border-top: 1px dashed #7f8c8d; padding-top: 30px; text-align: center;">
+                <h3 style="color: #ffffff; font-size: 20px; margin-bottom: 15px; border: none; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);">💬 意猶未盡？向大師追加提問</h3>
+
+                <div id="followUpThread"></div>
+
+                <div id="followUpComposer">
+                    <div style="margin-bottom: 12px; color: #bdc3c7;">
+                        追加抽牌張數：
+                        <button type="button" class="followup-count-btn active" data-count="1" onclick="setFollowUpCount(1, this)">1 張</button>
+                        <button type="button" class="followup-count-btn" data-count="2" onclick="setFollowUpCount(2, this)">2 張</button>
+                        <button type="button" class="followup-count-btn" data-count="3" onclick="setFollowUpCount(3, this)">3 張</button>
+                    </div>
+                    <input type="text" id="followUpInput" class="question-input" style="width: 80%; margin-bottom: 15px;" placeholder="請輸入你想追問的細節，大師將為你追加抽牌...">
+                    <br>
+                    <button id="followUpBtn" class="spread-btn" style="background-color: #2980b9; border-color: #3498db; width: auto; padding: 10px 25px; font-size: 16px;" onclick="drawFollowUpCard()">
+                        🃏 抽取追加牌並提問
+                    </button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="resetReading()" style="background: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">重新占卜一局</button>
+            </div>
+        </div>
+    </div> 
+
+    <div style="margin: 60px auto 20px; max-width: 800px; background-color: transparent; padding: 30px; border-radius: 15px; border-top: 1px solid rgba(255, 255, 255, 0.4); border-bottom: 1px solid rgba(255, 255, 255, 0.4); color: #ecf0f1; line-height: 1.8; text-align: left; font-size: 16px; position: relative; z-index: 10;">
+        <h3 style="color: #f1c40f; text-align: center; margin-top: 0; font-size: 22px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">🌹 命理師的真心話與初衷</h3>
+        <p style="text-align: justify; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+            在這個動盪不安的社會與世界裡，科學或許能解釋萬物的運作，卻無法完全定義人與人之間的情懷、牽絆，以及靈魂深處的連結。
+        </p>
+        <p style="text-align: justify; margin-bottom: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+            我創造這個空間的初衷，是希望能用自己微薄的力量去幫助更多人。透過塔羅牌卡的解讀，接住每一個迷惘的片刻，讓大家在面對未知時，內心能少一點焦慮、多一點平靜與富足。無論抽到什麼牌，請記得，這只是一個指引，而力量始終在你自己的手中。
+        </p>
+    </div>  
+
+    <script src="tarot-logic.js"></script>
+    <script>
+        // 金鑰已搬到後端 .env，這裡不再放任何金鑰。前端改呼叫本機代理 /api/gemini/*。
+
+        // 牌陣與牌義資料、純函式、fallbackModels 清單已抽到 tarot-logic.js（見同層的 tarot-logic.js）
+
+        // 擁有者密碼/邀請碼故意只存在這兩個記憶體變數，不寫進 cookie/localStorage——重新整理頁面就會被清空，
+        // 回到「沒解鎖」的狀態，每次都要重新輸入，不會被悄悄記住。
+        let ownerPassMemory = null;
+        let guestPassMemory = null;
+        // 打 /api/gemini/* 時要帶著這個 header，伺服器才知道你是擁有者/有邀請碼。
+        function authHeaders() {
+            const headers = { "Content-Type": "application/json" };
+            if (ownerPassMemory) headers["X-Owner-Passphrase"] = ownerPassMemory;
+            if (guestPassMemory) headers["X-Guest-Passphrase"] = guestPassMemory;
+            return headers;
+        }
+
+        // ===== 🔓 擁有者解鎖：輸入通行密碼後，這次頁面瀏覽期間不會被流量限制卡到（重新整理就要再輸入一次）=====
+        async function unlockOwner() {
+            if (ownerPassMemory) {
+                alert("這次瀏覽已經解鎖了，重新整理頁面後才需要再輸入一次。");
+                return;
+            }
+            const pass = prompt("輸入通行密碼：");
+            if (pass === null || pass.trim() === "") return;
+            try {
+                const res = await fetch("/api/auth/unlock", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ passphrase: pass.trim() })
+                });
+                if (res.ok) {
+                    ownerPassMemory = pass.trim();
+                    document.getElementById("ownerUnlockBtn").classList.add("unlocked");
+                    alert("✅ 解鎖成功，這次瀏覽期間不會被流量限制卡到（重新整理頁面要再輸入一次）。");
+                } else {
+                    alert("❌ 密碼不對。");
+                }
+            } catch (e) {
+                alert("連線失敗，請稍後再試。");
+            }
+        }
+        (async function checkAuthStatus() {
+            try {
+                const res = await fetch("/api/auth/status");
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.usingOwnKey) document.getElementById("ownKeyBtn").classList.add("active");
+            } catch (e) {}
+        })();
+
+        // 🎫 邀請碼：擁有者私下給朋友的密碼，跟擁有者解鎖是兩組不同的碼。沒有這組碼就用不了共用金鑰的 AI 功能。
+        // 同樣只存在記憶體變數，重新整理頁面要再輸入一次。
+        async function enterGuestCode() {
+            if (guestPassMemory) {
+                alert("這次瀏覽已經輸入過邀請碼了，重新整理頁面後才需要再輸入一次。");
+                return;
+            }
+            const pass = prompt("輸入邀請碼：");
+            if (pass === null || pass.trim() === "") return;
+            try {
+                const res = await fetch("/api/auth/guest-unlock", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ passphrase: pass.trim() })
+                });
+                if (res.ok) {
+                    guestPassMemory = pass.trim();
+                    document.getElementById("guestAccessBtn").classList.add("active");
+                    alert("✅ 邀請碼正確，這次瀏覽期間可以使用 AI 功能了（重新整理頁面要再輸入一次）！");
+                } else {
+                    alert("❌ 邀請碼不對，請跟邀請你的人確認一下。");
+                }
+            } catch (e) {
+                alert("連線失敗，請稍後再試。");
+            }
+        }
+
+        // ===== 🔑 自帶 API Key：輸入自己的 Gemini Key 後，這個瀏覽器的占卜請求改用自己的金鑰，不佔用網站擁有者的額度 =====
+        async function toggleOwnKey() {
+            const btn = document.getElementById("ownKeyBtn");
+            if (btn.classList.contains("active")) {
+                if (!confirm("要切回使用網站共用的 API Key 嗎？")) return;
+                try {
+                    await fetch("/api/auth/clear-own-key", { method: "POST" });
+                } catch (e) {}
+                btn.classList.remove("active");
+                alert("已切回共用金鑰。");
+                return;
+            }
+
+            const key = prompt("輸入你自己的 Gemini API Key：\n（只會存在伺服器記憶體裡，不會寫進任何檔案，重啟伺服器就會消失）");
+            if (key === null || key.trim() === "") return;
+
+            try {
+                const res = await fetch("/api/auth/use-own-key", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ apiKey: key.trim() })
+                });
+                if (res.ok) {
+                    btn.classList.add("active");
+                    alert("✅ 已切換成使用你自己的 API Key，之後占卜不會再佔用網站擁有者的額度。");
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert(data.error === "invalid_api_key" ? "❌ 這支金鑰無效，請確認後再試一次。" : "❌ 驗證失敗，請稍後再試。");
+                }
+            } catch (e) {
+                alert("連線失敗，請稍後再試。");
+            }
+        }
+
+        // 這個網站的 AI 功能都要打 /api/gemini/... 這個相對路徑給 server.js 接，
+        // 如果是直接點開這個檔案 (file://) 而不是先 npm start 再用 http://localhost:3000 打開，
+        // 所有請求一定連不到伺服器，會被前端的重試迴圈包裝成看似「大師都在忙線」的誤導訊息。
+        if (location.protocol === "file:") {
+            alert("⚠️ 偵測到你是直接打開這個檔案 (file://)，AI 功能無法使用！\n\n請先在資料夾裡執行 npm start 啟動伺服器，再用瀏覽器打開 http://localhost:3000 來使用網站。");
+        }
+
+        let currentSpread = null;
+        let drawStep = 0;
+        let shuffledDeck = [];
+        let pickedCards = [];
+        let currentRecordId = null; // 「你的故事」：記住這次占卜存進歷史的 id，追加提問才接得回去
+        let continuationContext = null; // 「接續占卜」：使用者選了要接續的舊紀錄摘要，下一次解讀會塞進 AI prompt
+        // 「重新占卜一局」「← 返回重新選擇」改成 resetReading() 之後不會真的重新整理頁面了，
+        // 但使用者按 F5 或重新打開網址還是會整頁重新整理，純記憶體變數撐不過去，所以額外存一份在 sessionStorage 撐過這種情況。
+        (function restoreContinuation() {
+            try {
+                const saved = sessionStorage.getItem("tarot_continuation");
+                if (!saved) return;
+                continuationContext = JSON.parse(saved);
+                document.getElementById("continuationLabel").textContent = continuationContext.question || "（未填問題）";
+                document.getElementById("continuationBadge").style.display = "block";
+            } catch (e) {}
+        })();
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+        // 邀請碼沒輸入 / 共用金鑰每日額度用完，這兩種錯誤換哪個模型都一樣會失敗，偵測到就直接停手、顯示明確原因，不要陪它跑完整個重試清單。
+        async function accessOrQuotaErrorMessage(response) {
+            if (response.status !== 403 && response.status !== 429) return null;
+            try {
+                const data = await response.json();
+                if (data.error === "access_denied" || data.error === "daily_limit_reached") {
+                    return data.message || "目前無法使用，請稍後再試。";
+                }
+            } catch (e) {}
+            return null;
+        }
+        // 🌟 獨立的「煩惱梳理」AI 呼叫函式
+        function toggleHelper() {
+            const sidebar = document.getElementById("helperSidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        // ===== ⭐ 你的故事：占卜紀錄（存在伺服器端 data/history.json，換瀏覽器/裝置都看得到）=====
+        async function loadStory() {
+            try {
+                const res = await fetch("/api/history", { headers: authHeaders() });
+                if (!res.ok) return [];
+                return await res.json();
+            } catch (e) {
+                console.warn("讀取占卜紀錄失敗：", e);
+                return [];
+            }
+        }
+        function fmtStoryTime(ts) {
+            return new Date(ts).toLocaleString("zh-TW", { dateStyle: "medium", timeStyle: "short" });
+        }
+        async function openStory() {
+            document.getElementById("storyOverlay").classList.add("active");
+            await renderStory();
+        }
+        function closeStory() { document.getElementById("storyOverlay").classList.remove("active"); }
+        async function openDetail(id) {
+            const history = await loadStory();
+            const rec = history.find(r => r.id === id);
+            if (!rec) return;
+            renderDetail(rec);
+            document.getElementById("storyDetailOverlay").classList.add("active");
+        }
+        function closeDetail() { document.getElementById("storyDetailOverlay").classList.remove("active"); }
+        async function delStory(id) {
+            if (!confirm("確定要刪除這筆紀錄嗎？刪了就回不來囉。")) return;
+            try {
+                await fetch(`/api/history/${id}`, { method: "DELETE", headers: authHeaders() });
+            } catch (e) { console.warn("刪除紀錄失敗：", e); }
+            closeDetail();
+            await renderStory();
+        }
+        async function clearStory() {
+            if (!confirm("確定要清除全部占卜紀錄嗎？此動作無法復原。")) return;
+            try {
+                await fetch("/api/history", { method: "DELETE", headers: authHeaders() });
+            } catch (e) { console.warn("清除紀錄失敗：", e); }
+            await renderStory();
+        }
+        function cardLine(c) {
+            const yin = c.isReversed ? '<span class="rev">逆</span>' : '<span class="up">正</span>';
+            return `${c.name}${yin}`;
+        }
+        // 列表：只顯示「問題 + 牌卡」，點整張卡進入完整視窗
+        async function renderStory() {
+            const box = document.getElementById("recordList");
+            box.innerHTML = '<div class="empty-note">載入中...</div>';
+            const history = await loadStory();
+            if (history.length === 0) {
+                box.innerHTML = '<div class="empty-note">目前還沒有任何紀錄 ✨<br>做一次占卜，解讀完成後就會自動記在這裡。</div>';
+                return;
+            }
+            box.innerHTML = history.map(rec => {
+                const cards = rec.cards.map(cardLine).join("・");
+                const fu = (rec.followUps && rec.followUps.length)
+                    ? `<span class="fu-badge">💬 追問 ${rec.followUps.length}</span>` : "";
+                return `
+                <div class="record-card" onclick="openDetail('${rec.id}')">
+                    <div class="record-time">🕐 ${fmtStoryTime(rec.ts)} ${fu}</div>
+                    <div class="record-q">「${rec.question || "（未填問題）"}」</div>
+                    <div class="record-cards">🎴 ${cards}</div>
+                    <div class="record-more">點開看完整解讀 ›</div>
+                </div>`;
+            }).join("");
+        }
+        // 完整視窗：大字、好讀，含每張牌、完整解讀與追加提問
+        function renderDetail(rec) {
+            const cards = rec.cards.map(c => `
+                <div class="detail-card-row">
+                    <span class="dc-pos">${c.position || ""}</span>
+                    <span class="dc-name">${c.name} <span class="${c.isReversed ? 'rev' : 'up'}">(${c.isReversed ? '逆位' : '正位'})</span></span>
+                </div>`).join("");
+            const followUps = (rec.followUps || []).map(fu => {
+                const fuCards = fu.cards || (fu.card ? [fu.card] : []);
+                const cardsText = fuCards.length
+                    ? fuCards.map(c => c.name + (c.isReversed ? ' (逆位)' : ' (正位)')).join("、")
+                    : "—";
+                return `
+                <div class="detail-followup">
+                    <div class="fu-q">💬 你追問：「${fu.question || ""}」</div>
+                    <div class="fu-card">🃏 追加牌：${cardsText}</div>
+                    <div class="detail-reading">${formatAiText(fu.answer || "")}</div>
+                </div>`;
+            }).join("");
+            document.getElementById("detailBody").innerHTML = `
+                <div class="detail-time">🕐 ${fmtStoryTime(rec.ts)}</div>
+                <div class="detail-q">「${rec.question || "（未填問題）"}」</div>
+                <div class="detail-spread">🎴 ${rec.spreadName || "未知牌陣"}</div>
+                <div class="detail-cards">${cards}</div>
+                <h3 class="detail-h">✨ 大師解讀</h3>
+                <div class="detail-reading">${formatAiText(rec.reading || "（這次沒有保存解讀內容）")}</div>
+                ${followUps ? '<h3 class="detail-h">💬 追加提問</h3>' + followUps : ""}
+                <div style="text-align:center; margin-top:24px;">
+                    <button class="record-del" onclick="continueFromRecord('${rec.id}')" style="background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.5); color: #3498db;">🔗 接續這筆占卜</button>
+                    <button class="record-del" onclick="delStory('${rec.id}')">🗑 刪除這筆</button>
+                </div>`;
+        }
+        // 🔗 接續占卜：把這筆舊紀錄的摘要記住，下一次正式占卜的 AI prompt 會帶入當背景脈絡
+        async function continueFromRecord(id) {
+            const history = await loadStory();
+            const rec = history.find(r => r.id === id);
+            if (!rec) return;
+
+            const cardsLine = (rec.cards || []).map(c => `${c.name}${c.isReversed ? '(逆位)' : '(正位)'}`).join("、");
+            continuationContext = {
+                question: rec.question || "",
+                spreadName: rec.spreadName || "",
+                cardsLine,
+                readingExcerpt: (rec.reading || "").replace(/\*\*/g, "").slice(0, 300)
+            };
+
+            closeDetail();
+            closeStory();
+
+            sessionStorage.setItem("tarot_continuation", JSON.stringify(continuationContext));
+            document.getElementById("continuationLabel").textContent = continuationContext.question || "（未填問題）";
+            document.getElementById("continuationBadge").style.display = "block";
+            document.getElementById("questionInput").focus();
+        }
+        function clearContinuation() {
+            continuationContext = null;
+            sessionStorage.removeItem("tarot_continuation");
+            document.getElementById("continuationBadge").style.display = "none";
+        }
+        // 🌟 獨立的「煩惱梳理」AI 呼叫函式 (智囊團接力升級版)
+        async function clarifyQuestion() {
+            const story = document.getElementById("storyInput").value.trim();
+            if (story === "") {
+                alert("逼逼！請先在右側框框輸入你的煩惱或故事喔！");
+                return;
+            }
+
+            const btn = document.getElementById("helperBtn");
+            const resultBox = document.getElementById("helperResult");
+            
+            btn.innerText = "🔮 宇宙正在為你梳理思路...";
+            btn.disabled = true;
+            resultBox.style.display = "block";
+            resultBox.innerHTML = "<span style='color:#bdc3c7;'><i>大師正在傾聽你的心事，請稍候...</i></span>";
+
+            const prompt = `
+            你現在是一位溫暖且專業的塔羅大師。
+            使用者遇到了一些困擾，但他不知道該怎麼濃縮成一句適合占卜的具體問題。
+            以下是他傾吐的煩惱與故事：「${story}」
+
+            請幫他梳理出 3 個「最精準、最適合用塔羅牌占卜」的具體問題。
+            【極度重要】：保持極度簡潔俐落！每道問題請盡量控制在 20 個字以內。絕對不要講任何前言後語、問候或廢話，直接條列輸出（1. xxx 2. xxx 3. xxx）即可！
+            `;
+            let response;
+            let success = false;
+            let blockedMessage = null; // 邀請碼/每日額度被擋下時記在這裡，跳出重試迴圈後直接顯示，不要傻傻換模型重試
+            let lastErrorMsg = "";
+
+            try {
+                // 🔮 魔法在這裡：開啟大師智囊團接力迴圈
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    
+                    // 如果不是第一次嘗試，顯示切換大師的提示
+                    if (i > 0) {
+                        resultBox.innerHTML = `<span style='color:#bdc3c7;'><i>🔮 宇宙訊號微弱，正在為您切換其他大師連線中...</i></span>`;
+                        await sleep(1500); 
+                    }
+                    
+                    try {
+                        response = await fetch(`/api/gemini/generate/${currentModel}`, {
+                            method: "POST",
+                            headers: authHeaders(),
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: prompt }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ],
+                                generationConfig: {
+                                    thinkingConfig: { thinkingBudget: 0 }
+                                }
+                            })
+                        });
+
+                        if (response.ok) {
+                            success = true;
+                            break; // 成功就跳出迴圈！
+                        }
+                        const accessErr = await accessOrQuotaErrorMessage(response);
+                        if (accessErr) { blockedMessage = accessErr; break; }
+                        lastErrorMsg = `狀態碼 ${response.status}`;
+                    } catch (fetchErr) {
+                        lastErrorMsg = "網路連線異常";
+                    }
+                }
+
+                if (blockedMessage) throw new Error(blockedMessage);
+                // 如果跑完一輪全部失敗，拋出錯誤
+                if (!success) {
+                    throw new Error(`大師們目前都在忙線中 (${lastErrorMsg})`);
+                }
+
+                let data = await response.json();
+                if (!data.candidates || !data.candidates[0].content) throw new Error("AI 回傳格式空白");
+                
+                let text = data.candidates[0].content.parts[0].text;
+                
+                // 將 Markdown 的粗體換成我們網站好看的深黃色
+                let formattedText = text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+                formattedText = formattedText.replace(/\n/g, "<br>");
+                
+                // 🔮 魔法在這裡：把複製按鈕跟文字一起塞進去
+                resultBox.innerHTML = `
+                    <button class="copy-btn" onclick="copyHelperText(this)">📋 複製</button>
+                    <div id="helperTextContent">${formattedText}</div>
+                `;
+
+            } catch (err) {
+                // 真的全部陣亡才會顯示這個錯誤
+                resultBox.innerHTML = `⚠️ 哎呀，宇宙訊號微弱 (${err.message})，大師暫時聽不清楚，請稍後再試。`;
+            }
+            
+            btn.innerText = "🪄 再次梳理問題";
+            btn.disabled = false;
+        }
+        // 🌟 一鍵複製魔法
+        function copyHelperText(btnElement) {
+            // 抓出純文字內容 (不要 HTML 標籤)
+            const textToCopy = document.getElementById("helperTextContent").innerText;
+            
+            // 呼叫瀏覽器的剪貼簿 API
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // 複製成功，讓按鈕變身綠色勾勾
+                btnElement.innerHTML = "✅ 已複製！";
+                btnElement.style.color = "#2ecc71";
+                btnElement.style.borderColor = "#2ecc71";
+                
+                // 兩秒後變回原樣
+                setTimeout(() => {
+                    btnElement.innerHTML = "📋 複製";
+                    btnElement.style.color = "";
+                    btnElement.style.borderColor = "";
+                }, 2000);
+            }).catch(err => {
+                console.error('複製失敗:', err);
+                alert("哎呀，瀏覽器不給複製，請手動選取喔！");
+            });
+        }
+
+        function renderSuggestionButtons(simpleKey, deepKey) {
+            const spreadsEl = document.getElementById("suggestedSpreads");
+            if (!spreadsData[simpleKey]) simpleKey = "daily";
+            if (!spreadsData[deepKey]) deepKey = "coreDirect";
+
+            const simple = spreadsData[simpleKey];
+            const deep = spreadsData[deepKey];
+
+            spreadsEl.innerHTML = `
+                <div class="spread-btn" style="border-color: #2ecc71; background-color: rgba(46, 204, 113, 0.2);" onclick="startDrawing('${simpleKey}')">
+                    <div class="spread-title" style="color: #2ecc71;">🍃 簡易解析</div>
+                    <div class="spread-desc" style="color: #fff;">${simple.name}</div>
+                </div>
+                <div class="spread-btn" style="border-color: #e74c3c; background-color: rgba(231, 76, 60, 0.2);" onclick="startDrawing('${deepKey}')">
+                    <div class="spread-title" style="color: #e74c3c;">🔥 深入探討</div>
+                    <div class="spread-desc" style="color: #fff;">${deep.name}</div>
+                </div>
+            `;
+        }
+
+        async function suggestSpreads() {
+            const questionText = document.getElementById("questionInput").value.trim();
+            if (questionText === "") return alert("請先輸入問題！");
+
+            const suggestionBox = document.getElementById("suggestionBox");
+            const reasonEl = document.getElementById("suggestionReason");
+            const spreadsEl = document.getElementById("suggestedSpreads");
+
+            suggestionBox.style.display = "block";
+            reasonEl.innerHTML = "🔮 <i>大師正在為您連結宇宙運算中，請稍候...</i>";
+            spreadsEl.innerHTML = ""; 
+
+            const promptText = `
+            使用者問題：「${questionText}」。
+            請從以下牌陣中，精準判斷並推薦一個最適合的「簡易版」牌陣 和 一個「深入版」牌陣：
+            - daily (每日一占，1張牌，適合運勢)
+            - classic (經典時間，3張牌，適合過去/現在/未來發展)
+            - coreDirect (直指核心，4張牌，適合尋找問題盲點與對策)
+            - actionPlan (行動計畫，5張牌，適合需要具體解決方案)
+            - lifeStage (人生階段，5張牌，適合靈性與人生狀態探索)
+            - findPartner (尋找對象，5張牌，適合單身求桃花)
+            - friendship (友誼占卜，6張牌，適合朋友/同事人際關係)
+            - loveTree (愛情之樹，5張牌，適合戀愛關係與潛力)
+            - loveCross (戀愛十字，5張牌，適合雙方關係解析)
+            - voiceOfHeart (心之聲牌陣，8張牌，適合深入探討對方心思與印象)
+            - celticCross (塞爾特十字，10張牌，適合超複雜、全方位的重大人生決策)
+
+            【重要篩選原則】：
+            1. 如果使用者的問題跟「愛情、喜歡、伴侶、離婚、結婚、在一起、第三者、前任、復合」等【感情】相關，
+               你的「深入版牌陣 (deepKey)」必須從「loveTree」、「loveCross」、「voiceOfHeart」、「findPartner」中擇一推薦。
+            2. 如果問題非常重大複雜（如轉職、訴訟、長遠人生），可以考慮推薦「celticCross」。
+
+            請用簡短、溫暖、閨蜜般大實話的語氣給出推薦理由。
+            `;
+
+            let response;
+            let success = false;
+            let blockedMessage = null; // 邀請碼/每日額度被擋下時記在這裡，跳出重試迴圈後直接顯示，不要傻傻換模型重試
+            let lastErrorMsg = "";
+
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    console.log(`[推薦牌陣] 正在嘗試呼叫模型: ${currentModel}...`);
+                    try {
+                        response = await fetch(`/api/gemini/generate/${currentModel}`, {
+                            method: "POST",
+                            headers: authHeaders(),
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ],
+                                generationConfig: {
+                                    thinkingConfig: { thinkingBudget: 0 },
+                                    responseMimeType: "application/json",
+                                    responseSchema: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            simpleKey: { type: "STRING" },
+                                            deepKey: { type: "STRING" },
+                                            reason: { type: "STRING" }
+                                        },
+                                        required: ["simpleKey", "deepKey", "reason"]
+                                    }
+                                }
+                            })
+                        });
+
+                        if (response.ok) {
+                            success = true;
+                            break;
+                        }
+                        const accessErr = await accessOrQuotaErrorMessage(response);
+                        if (accessErr) { blockedMessage = accessErr; break; }
+                        lastErrorMsg = `狀態碼 ${response.status}`;
+                    } catch (fetchErr) {
+                        lastErrorMsg = "網路連線異常";
+                    }
+                }
+
+                if (blockedMessage) throw new Error(blockedMessage);
+                if (!success) {
+                    throw new Error(`所有模型皆無回應 (最後錯誤: ${lastErrorMsg})`);
+                }
+
+                const data = await response.json();
+                if (!data.candidates || !data.candidates[0].content) throw new Error("AI 回傳格式空白");
+
+                const resultText = data.candidates[0].content.parts[0].text;
+                const result = JSON.parse(resultText);
+                
+                reasonEl.innerHTML = `🌟 ${result.reason}`;
+                renderSuggestionButtons(result.simpleKey, result.deepKey);
+
+            } catch (err) {
+                console.error("🚨 智囊團全數陣亡，罷工原因：", err);
+                const loveKeywords = ["他", "喜歡", "愛", "離婚", "老婆", "在一起", "復合", "桃花", "娶", "嫁", "小三", "小四"];
+                const isLoveQuestion = loveKeywords.some(keyword => questionText.includes(keyword));
+
+                if (isLoveQuestion) {
+                    reasonEl.innerHTML = `🌟 大師神念受干擾 (${err.message})，但算出此題關乎情緣，為您推薦：`;
+                    renderSuggestionButtons("loveTree", "loveCross");
+                } else {
+                    reasonEl.innerHTML = `🌟 大師神念受干擾 (${err.message})，為您推薦最萬用的法陣：`;
+                    renderSuggestionButtons("classic", "coreDirect");
+                }
+            }
+        }
+
+        // 「重新占卜一局」「← 返回重新選擇」改成這個而不是 location.reload()，
+        // 這樣才不會把 ownerPassMemory/guestPassMemory 也一起洗掉，逼使用者重新輸入密碼。
+        // startDrawing() 本來就會重置 drawStep/pickedCards/currentRecordId/followUpRounds 等讀牌狀態，這裡只需要切回設定畫面。
+        function resetReading() {
+            document.getElementById("drawSection").style.display = "none";
+            document.getElementById("setupSection").style.display = "block";
+            document.getElementById("synthesisBox").style.display = "none";
+            document.getElementById("synthesisText").innerHTML = "";
+            document.getElementById("questionInput").value = "";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        async function startDrawing(spreadKey) {
+            const questionText = document.getElementById("questionInput").value.trim();
+            if (questionText === "") {
+                alert("逼逼！請先輸入你的具體問題！");
+                return;
+            }
+
+            drawStep = 0;
+            pickedCards = [];
+            currentRecordId = null;
+            followUpRounds = [];
+            followUpCount = 1;
+            const threadEl = document.getElementById("followUpThread");
+            if (threadEl) threadEl.innerHTML = "";
+            document.querySelectorAll(".followup-count-btn").forEach(b => b.classList.toggle("active", b.dataset.count === "1"));
+
+            currentSpread = spreadsData[spreadKey];
+            document.getElementById("setupSection").style.display = "none";
+            document.getElementById("drawSection").style.display = "block";
+            
+            const displayQ = document.getElementById("displayQuestion");
+            displayQ.innerText = `🔮 你的問題：「${questionText}」\n(使用牌陣：${currentSpread.name})`;
+
+            const slotsContainer = document.getElementById("slotsContainer");
+            slotsContainer.innerHTML = ""; 
+            slotsContainer.className = currentSpread.layoutClass; 
+
+            for(let i = 0; i < currentSpread.positions.length; i++) {
+                let posData = currentSpread.positions[i];
+                let boxHTML = `
+                <div id="cardBox${i}" class="card-container empty-slot ${posData.cssClass}">
+                    <div class="position-title">【 ${posData.name} 】</div>
+                    <img id="cardImg${i}" class="card-image" src="images/card-empty.jpg" alt="空白">
+                    <div id="cardName${i}" class="card-name" style="color:#bdc3c7;">等待抽取...</div>
+                    <div id="cardMeaning${i}" class="card-meaning"></div>
+                </div>`;
+                slotsContainer.innerHTML += boxHTML;
+            }
+
+            document.getElementById("instructionPrompt").innerText = "🌌 宇宙洗牌中...";
+            document.getElementById("instructionPrompt").style.display = "block";
+            await sleep(800); 
+
+            shuffledDeck = [...tarotDeck].sort(() => Math.random() - 0.5);
+            const spreadArea = document.getElementById("spreadArea");
+            spreadArea.innerHTML = ""; 
+            
+            for(let i = 0; i < 78; i++) {
+                let cardImg = document.createElement("img");
+                cardImg.src = "images/card-back.jpg";
+                cardImg.className = "spread-card";
+                cardImg.onclick = () => pickCard(i, cardImg); 
+                spreadArea.appendChild(cardImg);
+            }
+            spreadArea.style.display = "flex";
+            document.getElementById("instructionPrompt").innerText = `👉 請憑直覺抽取第一張牌：【 ${currentSpread.positions[0].name} 】`;
+        }
+
+        async function pickCard(index, cardElement) {
+            const totalCardsNeeded = currentSpread.positions.length;
+            if (cardElement.classList.contains("picked") || drawStep >= totalCardsNeeded) return;
+            
+            cardElement.classList.add("picked");
+            let isReversed = Math.random() > 0.5;
+            pickedCards.push({ ...shuffledDeck[index], isReversed: isReversed });
+
+            let slotIndex = drawStep;
+            let box = document.getElementById("cardBox" + slotIndex);
+            
+            box.classList.remove("empty-slot");
+            box.classList.add("shuffling"); 
+            document.getElementById("cardImg" + slotIndex).src = "images/card-back.jpg";
+            document.getElementById("cardName" + slotIndex).innerText = "已抽取 (未翻開)";
+            document.getElementById("cardName" + slotIndex).style.color = "#8e44ad";
+            
+            await sleep(300);
+            box.classList.remove("shuffling");
+
+            drawStep++; 
+            const promptEl = document.getElementById("instructionPrompt");
+            
+            if (drawStep < totalCardsNeeded) {
+                promptEl.innerText = `👉 請憑直覺抽取下一張牌：【 ${currentSpread.positions[drawStep].name} 】`;
+            } else {
+                promptEl.innerText = "✨ 抽取完畢，大師正在為您翻牌解讀...";
+                await sleep(800);
+                document.getElementById("spreadArea").style.display = "none";
+                promptEl.style.display = "none";
+                await revealCards();
+            }
+        }
+
+        async function revealCards() {
+            const totalCards = currentSpread.positions.length;
+
+            for(let i = 0; i < totalCards; i++) {
+                let box = document.getElementById("cardBox" + i);
+                box.classList.add("flip-out");
+                await sleep(250); 
+                
+                let card = pickedCards[i];
+                let imgEl = document.getElementById("cardImg" + i);
+                imgEl.src = card.img;
+                if (card.isReversed) {
+                    imgEl.classList.add("reversed");
+                } else {
+                    imgEl.classList.remove("reversed");
+                }
+                
+                document.getElementById("cardName" + i).innerText = card.name + (card.isReversed ? " (逆位)" : " (正位)");
+                // 👇 魔法在這裡：判斷是否逆位，抓取對應的 meaning 或 revMeaning
+                document.getElementById("cardMeaning" + i).innerText = card.isReversed ? card.revMeaning : card.meaning;
+                document.getElementById("cardImg" + i).style.filter = "none";
+                
+                box.classList.remove("flip-out");
+                await sleep(400); 
+            }
+
+            document.getElementById("synthesisBox").style.display = "block";
+            document.getElementById("synthesisText").innerHTML = "🔮 <i>大師正在連結宇宙運算中，請稍候...</i>";
+            document.getElementById("synthesisBox").scrollIntoView({ behavior: "smooth" });
+
+            const questionText = document.getElementById("questionInput").value.trim();
+            let spreadInfoText = "";
+            for(let i=0; i < totalCards; i++) {
+                // 👇 抓取正確的關鍵字餵給 AI 大師
+                let kw = pickedCards[i].isReversed ? pickedCards[i].revKeyword : pickedCards[i].keyword;
+                spreadInfoText += `${i+1}. 位置【${currentSpread.positions[i].name}】：抽到「${pickedCards[i].name}」(${pickedCards[i].isReversed ? '逆位' : '正位'}，核心含義：${kw})\n`;
+            }
+
+            let continuationText = "";
+            if (continuationContext) {
+                continuationText = `
+            【之前相關的一次占卜】（使用者選擇要接續這個脈絡，請視為前情提要，幫忙串成一個連貫的故事，但不要整段重複贊述上次內容）
+            之前的問題：「${continuationContext.question}」（牌陣：${continuationContext.spreadName}）
+            之前抽到的牌：${continuationContext.cardsLine}
+            之前解讀的重點摘要：${continuationContext.readingExcerpt}
+            【強制呼應，最重要】：這次解讀的開頭必須先用一句話明確點出這次牌陣跟上面那次占卜的關聯或進展，不要當作完全無關的新占卜，讓使用者感覺是同一段故事的延續。
+            `;
+            }
+
+            let extraInstruction = "";
+            if (currentSpread.name === "每日一占") {
+                extraInstruction = "【特別任務】：因為這是「每日一占」，請務必具體描繪出這張牌在「今天」會對應到的「具體生活場景」、「即將發生的事件」或「真實生活中的寓意」，越有畫面感越好，不要只給抽象概念。";
+            } else if (currentSpread.name === "是非題占卜法") {
+                extraInstruction = "【特別任務】：因為這是「是非題占卜法」，請務必在開頭直接給出明確的「肯定 (Yes)」、「否定 (No)」或「不確定/中性」的答案，接著再綜合這三張正逆位牌面解釋原因。";
+            }
+
+            const promptText = `
+            你現在是一位結合了「專業塔羅占卜師」與「暖心心理輔導師」特質的命理導師。
+
+            【你的角色設定與說話風格】
+            1. 語氣幽默風趣、直白不修飾、一針見血，但內心保持善良、溫暖且絕對客觀。
+            2. 像是一位非常懂你、跟你說大實話的心理諮商閨蜜，拒絕高高在上的教訓態度，回應要具體化、接地氣但不浮誇。
+            3. 【重要】請絕對不要提及任何武俠、功法、招式等字眼，保持現代占卜與心理引導的專業感。
+            4. 解讀個別牌卡的時候可以根據牌卡圖案補充整體牌陣的解讀。
+
+            【大師的專業解牌法則】
+            1. 嚴格扣緊使用者的「具體問題」，拒絕模稜兩可的心靈雞湯，給出明確、清晰的局勢診斷（好/壞/有沒有機會）。
+            2. 注重「整組牌陣的流動性與整體故事性」：請綜合觀察這些牌之間的能量消長、元素互補或衝突，將它們串連成一個完整情境。
+            3. 🌟【進階逆位解讀法則】：正位代表能量順暢發揮、外顯且客觀；逆位絕非單純等於「絕對的壞」或「完全相反的意思」，而是代表能量狀態的改變。遇到逆位牌時，請務必從以下四種邏輯中挑選最適合的來解讀：
+               (1) 能量受阻或延遲：該牌原本的力量無法順利發揮，遇到瓶頸。
+               (2) 能量內化：情況轉為私密，或是內在心態的調整、盲點與自我修復。
+               (3) 過度或不足：原有的特質走極端（例如過度掌控或失去權力）。
+               (4) 走向反面：傳統解法，直接反映正位的負面狀態。
+            4. 針對使用者的問題方向，請主動給予深度的「補充延伸回答」。
+            5. 在結尾的【大師總結】中，無論牌面多糟糕，都必須指引一條可以挽回局面、調整心態的破局建議。
+
+            ${continuationText}
+            使用者的問題是：「${questionText}」
+            使用者選擇的牌陣是：「${currentSpread.name}」
+
+            他們抽到的牌如下：
+            ${spreadInfoText}
+
+            請為使用者進行專業且溫暖的綜合解讀。
+            ${extraInstruction}
+
+            排版要求（非常重要）：
+            1. 請【絕對不要】使用任何 HTML 顏色屬性 (color) 或 style 標籤，單純輸出文字即可。
+            2. 每個位置的解讀標題，請統一使用 <h3>【位置名稱】：牌名 (正/逆位)</h3> 標籤。
+            3. 重點字句請單純使用 <b>標籤</b> 強調。
+            4. 【絕對不要使用 # 井字號來當作標題】。
+            5. 段落之間請保持緊湊，不要加入過多的空白行。
+            6. 【重要】在所有個別牌義解析完畢後，請務必在最下方加上 <h3>【大師總結】</h3>，為這整組牌陣給出一個宏觀的結論與最終建議。
+            `;
+            continuationContext = null; // 已經塞進這次的 prompt，一次性消耗掉，不會悄悄影響下一輪占卜
+            sessionStorage.removeItem("tarot_continuation");
+            document.getElementById("continuationBadge").style.display = "none";
+
+            let response;
+            let success = false;
+            let blockedMessage = null; // 邀請碼/每日額度被擋下時記在這裡，跳出重試迴圈後直接顯示，不要傻傻換模型重試
+
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    if (i > 0) {
+                        document.getElementById("synthesisText").innerHTML = "🔮 <i>大師正在為您連結宇宙運算中，請稍候...</i>";
+                        await sleep(2000);
+                    }
+                    try {
+                        response = await fetch(`/api/gemini/stream/${currentModel}`, {
+                            method: "POST",
+                            headers: authHeaders(),
+                            body: JSON.stringify({ 
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ],
+                                // maxOutputTokens 控制在 3000：輸出 token 是計費大頭，留太大的上限沒必要還會推高成本。
+                                // thinkingBudget: 0 關掉模型的內部「思考」時間，犧牲一點點深度換取開始吐字的速度。
+                                generationConfig: {
+                                    maxOutputTokens: 3000,
+                                    thinkingConfig: { thinkingBudget: 0 }
+                                }
+                            })
+                        });
+                        if (response.ok) { success = true; break; }
+                        const accessErr = await accessOrQuotaErrorMessage(response);
+                        if (accessErr) { blockedMessage = accessErr; break; }
+                    } catch (fetchErr) { console.warn(`${currentModel} 連線失敗:`, fetchErr); }
+                }
+
+                if (blockedMessage) throw new Error(blockedMessage);
+                if (!success || !response) {
+                    throw new Error("所有大師目前都在忙線中，宇宙能量暫時耗盡，請稍後再試！");
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let aiText = "", buffer = "";
+                document.getElementById("synthesisText").innerHTML = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    let lines = buffer.split("\n");
+                    buffer = lines.pop(); 
+                    
+                    for (let line of lines) {
+                        if (line.startsWith("data: ")) {
+                            let str = line.substring(6); 
+                            if (str.trim() === "[DONE]") continue;
+                            try {
+                                let data = JSON.parse(str);
+                                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                                    aiText += data.candidates[0].content.parts[0].text;
+                                    document.getElementById("synthesisText").innerHTML = formatAiText(aiText);
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+
+                // 🌟 解讀完成 → 自動存進「你的故事」（伺服器端持久化，獨立 try，存檔失敗也不影響解讀）
+                try {
+                    const storyCards = pickedCards.map((c, i) => ({
+                        position: currentSpread.positions[i].name,
+                        name: c.name, isReversed: c.isReversed
+                    }));
+                    const res = await fetch("/api/history", {
+                        method: "POST",
+                        headers: authHeaders(),
+                        body: JSON.stringify({
+                            question: questionText, spreadName: currentSpread.name,
+                            cards: storyCards, reading: aiText
+                        })
+                    });
+                    const rec = await res.json();
+                    currentRecordId = rec.id;
+                } catch (saveErr) { console.warn("占卜紀錄存檔失敗：", saveErr); }
+            } catch (err) {
+                document.getElementById("synthesisText").innerHTML = `⚠️ <b>連結中斷或發生錯誤：</b><br>${err.message}<br><br>💡 <b>請確認金鑰是否有效，或稍後再試。</b>`;
+            }
+        }
+
+        // 🌟 全部正位解釋：教學/對照用途，把這次抽到的牌全部當成正位，重新解讀一次給使用者比較差異，不影響原本的解讀結果。
+        function closeAllUpright() {
+            document.getElementById("allUprightOverlay").classList.remove("active");
+        }
+        async function showAllUprightReading() {
+            if (!pickedCards.length) return;
+
+            const overlay = document.getElementById("allUprightOverlay");
+            const body = document.getElementById("allUprightBody");
+            overlay.classList.add("active");
+
+            const questionText = document.getElementById("questionInput").value.trim();
+            let spreadInfoText = "";
+            const cardsHtml = pickedCards.map((c, i) => {
+                spreadInfoText += `${i + 1}. 位置【${currentSpread.positions[i].name}】：抽到「${c.name}」(正位，核心含義：${c.keyword})\n`;
+                return `<div class="detail-card-row"><span class="dc-pos">${currentSpread.positions[i].name}</span><span class="dc-name">${c.name} <span class="up">(正位)</span></span></div>`;
+            }).join("");
+
+            body.innerHTML = `
+                <div class="detail-q">「${questionText || "（未填問題）"}」</div>
+                <div class="detail-cards">${cardsHtml}</div>
+                <h3 class="detail-h">✨ 全部正位的解讀</h3>
+                <div id="allUprightText" class="detail-reading">🔮 <i>大師正在假設這組牌全部正位，重新解讀中...</i></div>
+            `;
+
+            const promptText = `
+            你現在是一位結合了「專業塔羅占卜師」與「暖心心理輔導師」特質的命理導師。
+
+            這是一個「教學對照」用途的特殊任務：使用者剛剛抽到的牌陣裡可能含有逆位牌，但現在請你「假設這一整組牌全部都是正位」，針對使用者原本的問題重新做一次完整解讀，讓使用者可以對照「如果全部正位，故事會有什麼不同」。
+
+            使用者的問題是：「${questionText}」
+            使用者的牌陣是：「${currentSpread.name}」
+            請把以下每一張牌都當作正位來解讀：
+            ${spreadInfoText}
+
+            請為使用者進行專業且溫暖的綜合解讀，語氣維持幽默直白、閨蜜般的大實話風格。
+
+            排版要求（非常重要）：
+            1. 請【絕對不要】使用任何 HTML 顏色屬性 (color) 或 style 標籤，單純輸出文字即可。
+            2. 每個位置的解讀標題，請統一使用 <h3>【位置名稱】：牌名 (正位)</h3> 標籤。
+            3. 重點字句請單純使用 <b>標籤</b> 強調。
+            4. 【絕對不要使用 # 井字號來當作標題】。
+            5. 在所有個別牌義解析完畢後，請務必在最下方加上 <h3>【大師總結】</h3>，給出整體結論。
+            `;
+
+            let response;
+            let success = false;
+            let blockedMessage = null; // 邀請碼/每日額度被擋下時記在這裡，跳出重試迴圈後直接顯示，不要傻傻換模型重試
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    if (i > 0) await sleep(1500);
+                    try {
+                        response = await fetch(`/api/gemini/stream/${currentModel}`, {
+                            method: "POST",
+                            headers: authHeaders(),
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ],
+                                generationConfig: {
+                                    maxOutputTokens: 3000,
+                                    thinkingConfig: { thinkingBudget: 0 }
+                                }
+                            })
+                        });
+                        if (response.ok) { success = true; break; }
+                        const accessErr = await accessOrQuotaErrorMessage(response);
+                        if (accessErr) { blockedMessage = accessErr; break; }
+                    } catch (fetchErr) { console.warn(`${currentModel} 連線失敗:`, fetchErr); }
+                }
+
+                if (blockedMessage) throw new Error(blockedMessage);
+                if (!success || !response) throw new Error("所有大師目前都在忙線中，宇宙能量暫時耗盡，請稍後再試！");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let aiText = "", buffer = "";
+                const textEl = document.getElementById("allUprightText");
+                textEl.innerHTML = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    let lines = buffer.split("\n");
+                    buffer = lines.pop();
+
+                    for (let line of lines) {
+                        if (line.startsWith("data: ")) {
+                            let str = line.substring(6);
+                            if (str.trim() === "[DONE]") continue;
+                            try {
+                                let data = JSON.parse(str);
+                                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                                    aiText += data.candidates[0].content.parts[0].text;
+                                    textEl.innerHTML = formatAiText(aiText);
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+            } catch (err) {
+                document.getElementById("allUprightText").innerHTML = `⚠️ <b>連結中斷或發生錯誤：</b><br>${err.message}`;
+            }
+        }
+
+        let followUpCount = 1; // 使用者選擇的追加抽牌張數 (1~3)
+        let followUpRounds = []; // 本局所有追問回合：{ question, cards: [{name,isReversed}], answer }
+
+        function setFollowUpCount(n, btnEl) {
+            followUpCount = n;
+            document.querySelectorAll(".followup-count-btn").forEach(b => b.classList.remove("active"));
+            btnEl.classList.add("active");
+        }
+
+        // 攤一排蓋牌讓使用者憑直覺自己點選 count 張（牌序已經洗好，只是讓使用者選位置，跟主牌陣的 pickCard 同一套手感）。
+        // 回傳一個 Promise，選滿 count 張才會 resolve。
+        function pickCardsFromFan(deckSubset, count, fanEl, instructionEl) {
+            return new Promise(resolve => {
+                const shuffled = [...deckSubset].sort(() => Math.random() - 0.5);
+                const picked = [];
+                fanEl.innerHTML = "";
+                shuffled.forEach(card => {
+                    const img = document.createElement("img");
+                    img.src = "images/card-back.jpg";
+                    img.className = "spread-card";
+                    img.onclick = () => {
+                        if (img.classList.contains("picked") || picked.length >= count) return;
+                        img.classList.add("picked");
+                        picked.push({ ...card, isReversed: Math.random() > 0.5 });
+                        if (picked.length < count) {
+                            instructionEl.innerText = `👉 請繼續憑直覺選牌：還要選 ${count - picked.length} 張`;
+                        } else {
+                            instructionEl.innerText = "✨ 選牌完畢，翻牌中...";
+                            setTimeout(() => resolve(picked), 400);
+                        }
+                    };
+                    fanEl.appendChild(img);
+                });
+            });
+        }
+
+        async function drawFollowUpCard() {
+            const inputEl = document.getElementById("followUpInput");
+            const followUpInput = inputEl.value.trim();
+            if (followUpInput === "") {
+                alert("逼逼！請先輸入你的追問內容！");
+                return;
+            }
+
+            const btn = document.getElementById("followUpBtn");
+            const countBtns = document.querySelectorAll(".followup-count-btn");
+            btn.disabled = true;
+            inputEl.disabled = true;
+            countBtns.forEach(b => b.disabled = true);
+            btn.innerText = "👉 請在下方選牌";
+
+            // 每一輪追問都往下新增一個區塊，舊的回合會留在畫面上，輸入框問完可以繼續問下一輪
+            const thread = document.getElementById("followUpThread");
+            const roundEl = document.createElement("div");
+            roundEl.className = "followup-round";
+
+            const qEl = document.createElement("div");
+            qEl.className = "followup-question";
+            qEl.textContent = "💬 你問：" + followUpInput;
+            roundEl.appendChild(qEl);
+
+            const instructionEl = document.createElement("div");
+            instructionEl.className = "followup-instruction";
+            roundEl.appendChild(instructionEl);
+
+            const fanEl = document.createElement("div");
+            fanEl.className = "followup-fan-area";
+            roundEl.appendChild(fanEl);
+
+            const cardsRow = document.createElement("div");
+            cardsRow.className = "followup-cards-row";
+            roundEl.appendChild(cardsRow);
+
+            const answerEl = document.createElement("div");
+            answerEl.className = "synthesis-content followup-answer";
+            answerEl.style.marginTop = "20px";
+            answerEl.style.textAlign = "left";
+            roundEl.appendChild(answerEl);
+
+            thread.appendChild(roundEl);
+            roundEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            const count = followUpCount;
+
+            try {
+                // 彙整「主牌陣 + 之前每一輪追問」抽過的牌，攤牌池才不會出現重複的牌
+                const alreadyDrawn = getAllDrawnCards(pickedCards, followUpRounds);
+                let pool = getRemainingDeck(tarotDeck, alreadyDrawn);
+                if (pool.length < count) pool = tarotDeck; // 牌不夠選了，重新整副洗（跟主牌陣抽完一輪的邏輯一致）
+
+                instructionEl.innerText = count > 1 ? `👉 請憑直覺選 ${count} 張牌` : "👉 請憑直覺選一張牌";
+                const drawnCards = await pickCardsFromFan(pool, count, fanEl, instructionEl);
+
+                fanEl.style.display = "none";
+                instructionEl.innerText = "";
+
+                // 先放 count 個卡槽，再逐一翻牌
+                for (let i = 0; i < count; i++) {
+                    const slot = document.createElement("div");
+                    slot.className = "card-container empty-slot";
+                    slot.innerHTML = `
+                        <div class="position-title">【 追加指引${count > 1 ? " " + (i + 1) : ""} 】</div>
+                        <img class="card-image" src="images/card-back.jpg" alt="翻牌中">
+                        <div class="card-name" style="color:#8e44ad;">翻牌中...</div>
+                        <div class="card-meaning"></div>
+                    `;
+                    cardsRow.appendChild(slot);
+                }
+                await sleep(300);
+
+                for (let i = 0; i < count; i++) {
+                    const slot = cardsRow.children[i];
+                    const card = drawnCards[i];
+
+                    slot.classList.add("flip-out");
+                    await sleep(200);
+
+                    slot.classList.remove("empty-slot");
+                    const imgEl = slot.querySelector(".card-image");
+                    imgEl.src = card.img;
+                    imgEl.classList.toggle("reversed", card.isReversed);
+                    const nameEl = slot.querySelector(".card-name");
+                    nameEl.style.color = "";
+                    nameEl.innerText = card.name + (card.isReversed ? " (逆位)" : " (正位)");
+                    slot.querySelector(".card-meaning").innerText = card.isReversed ? card.revMeaning : card.meaning;
+
+                    slot.classList.remove("flip-out");
+                    await sleep(250);
+                }
+
+                await askFollowUpAI(followUpInput, drawnCards, answerEl);
+            } finally {
+                inputEl.value = "";
+                inputEl.disabled = false;
+                btn.disabled = false;
+                countBtns.forEach(b => b.disabled = false);
+                btn.innerText = "🃏 抽取追加牌並提問";
+                inputEl.focus();
+            }
+        }
+
+        async function askFollowUpAI(question, cards, answerEl) {
+            answerEl.innerHTML = "🔮 <i>大師正在為您的追問連結宇宙運算中，請稍候...</i>";
+            answerEl.scrollIntoView({ behavior: "smooth", block: "center" });
+
+            const mainQuestion = document.getElementById("questionInput").value.trim();
+            let spreadInfoText = "";
+            for(let i=0; i < pickedCards.length; i++) {
+                spreadInfoText += `${i+1}. 位置【${currentSpread.positions[i].name}】：抽到「${pickedCards[i].name}」(${pickedCards[i].isReversed ? '逆位' : '正位'})\n`;
+            }
+
+            let historyText = "";
+            followUpRounds.forEach((r, idx) => {
+                const prevCardsLine = r.cards.map(c => `「${c.name}」(${c.isReversed ? '逆位' : '正位'})`).join("、");
+                historyText += `第 ${idx + 1} 次追問：「${r.question}」\n當時抽到的追加指示牌：${prevCardsLine}\n大師當時的回答：${r.answer}\n\n`;
+            });
+
+            const cardsLine = cards.map(c => `「${c.name}」(${c.isReversed ? '逆位' : '正位'}，核心含義：${c.isReversed ? c.revKeyword : c.keyword})`).join("、");
+
+            const promptText = `
+            你現在是一位結合了「專業塔羅占卜師」與「暖心心理輔導師」特質的命理導師。
+
+            【前情提要】
+            使用者原本的問題是：「${mainQuestion}」
+            原本抽到的牌陣結果是：
+            ${spreadInfoText}
+            ${historyText ? `【之前的追問紀錄】（請延續這些脈絡，保持前後一致、不要互相矛盾）\n${historyText}` : ""}
+            【現在的追加提問】
+            使用者提出了追加問題：「${question}」
+            為此，使用者又額外抽了 ${cards.length} 張「追加指示牌」：${cardsLine}。
+
+            【大師的追加解牌任務】
+            0. 【強制呼應，最重要】：絕對不要把這次追問當成一個全新、獨立的問題來回答。回答的開頭請先用一句話明確點出這次追加跟「原本的問題／牌陣」或「之前追問紀錄」之間的關聯（例如：「呼應你剛剛問的...」、「延續上面提到的...」），再進入這次的具體解答，確保整段對話前後連貫、像同一個人在跟你聊到現在。
+            1. 請延續你幽默風趣、溫暖直白、閨蜜般大實話的說話風格。
+            2. 根據原本的牌陣背景與之前的追問脈絡，結合這 ${cards.length} 張全新的「追加指示牌」，針對使用者的「追加問題」給出明確、具體的解答。如果抽到不只一張牌，請把它們當作一組整體來解讀，說明它們之間如何呼應或補充。
+            3. 🌟【進階逆位解讀法則】：正位代表能量順暢、外顯；逆位代表能量阻塞、內斂。遇到逆位時，請依據「(1)能量受阻延遲」、「(2)能量內化(轉為內心課題)」、「(3)過度或不足走極端」或「(4)走向反面」這四種邏輯，挑選最適合的來深度解析。
+            4. 排版要求：單純輸出文字即可，【絕對不要使用 # 井字號來當作標題】，也請勿使用 HTML 顏色或 style 標籤。請務必大量使用 Markdown 粗體（即 **重點字句**）來為關鍵字、神諭金句與行動建議「畫重點」！
+
+            【大師的專業解牌法則】
+            1. 嚴格扣緊使用者的「具體問題」，拒絕模稜兩可的心靈雞湯，給出明確、清晰的局勢診斷（好/壞/有沒有機會）。
+            2. 注重「整組牌陣的流動性與整體故事性」：請綜合觀察這些牌之間的能量消長、元素互補或衝突，將它們串連成一個完整情境。
+            3. 🌟【進階逆位解讀法則】：正位代表能量順暢發揮、外顯且客觀；逆位絕非單純等於「絕對的壞」或「完全相反的意思」，而是代表能量狀態的改變。遇到逆位牌時，請從「(1)能量受阻/延遲、(2)能量內化/自我反省、(3)過度或不足走極端、(4)走向反面」中挑選最適合的來解讀。
+            4. 🌟【壓倒性負面牌的「破局法則」】：（非常重要！）如果牌面呈現「壓倒性的警告或負面」（例如高塔、寶劍十、死神等），請絕對不要硬塞虛假的毒性正能量。大師應該果斷且溫柔地指出「這條路目前行不通 / 代價過於慘痛」，並引導使用者跳脫框架。告訴他們「這或許是宇宙在阻止你走冤枉路」，並主動建議他們「考慮停損、放棄現有執念，或是探索另一條完全不同的 B 計畫」。
+            5. 在結尾的【大師總結】中，無論牌面是好是壞，都必須指引一條具體的行動建議或心態轉換法。
+            6.🌟【極度重要：簡潔俐落】：針對追加提問的回答請控制在「2 到 3 個簡短段落」內，直接給出答案與做法，不要繞圈子講廢話！
+            `;
+
+            let response;
+            let success = false;
+            let blockedMessage = null; // 邀請碼/每日額度被擋下時記在這裡，跳出重試迴圈後直接顯示，不要傻傻換模型重試
+
+            try {
+                for (let i = 0; i < fallbackModels.length; i++) {
+                    let currentModel = fallbackModels[i];
+                    if (i > 0) {
+                        answerEl.innerHTML = "🔮 <i>大師正在為您的追問連結宇宙運算中，請稍候...</i>";
+                        await sleep(2000);
+                    }
+                    try {
+                        response = await fetch(`/api/gemini/stream/${currentModel}`, {
+                            method: "POST",
+                            headers: authHeaders(),
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: promptText }] }],
+                                safetySettings: [
+                                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                                ],
+                                // maxOutputTokens 控制在 3000，輸出 token 是計費大頭
+                                generationConfig: {
+                                    maxOutputTokens: 3000,
+                                    thinkingConfig: { thinkingBudget: 0 }
+                                }
+                            })
+                        });
+                        if (response.ok) { success = true; break; }
+                        const accessErr = await accessOrQuotaErrorMessage(response);
+                        if (accessErr) { blockedMessage = accessErr; break; }
+                    } catch (fetchErr) { console.warn(`${currentModel} 連線失敗:`, fetchErr); }
+                }
+
+                if (blockedMessage) throw new Error(blockedMessage);
+                if (!success || !response) throw new Error("所有大師目前都在忙線中，宇宙能量暫時耗盡，請稍後再試！");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let aiText = "", buffer = "";
+                answerEl.innerHTML = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    let lines = buffer.split("\n");
+                    buffer = lines.pop();
+
+                    for (let line of lines) {
+                        if (line.startsWith("data: ")) {
+                            let str = line.substring(6);
+                            if (str.trim() === "[DONE]") continue;
+                            try {
+                                let data = JSON.parse(str);
+                                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                                    aiText += data.candidates[0].content.parts[0].text;
+                                    answerEl.innerHTML = formatAiText(aiText);
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+
+                // 🌟 追加提問完成 → 記到這局的追問脈絡，並接到剛剛那筆占卜紀錄裡（伺服器端持久化，獨立 try，失敗不影響畫面）
+                const cardsForRecord = cards.map(c => ({ name: c.name, isReversed: c.isReversed }));
+                followUpRounds.push({ question: question, cards: cardsForRecord, answer: aiText });
+                try {
+                    if (currentRecordId) {
+                        await fetch(`/api/history/${currentRecordId}/followups`, {
+                            method: "POST",
+                            headers: authHeaders(),
+                            body: JSON.stringify({
+                                question: question,
+                                cards: cardsForRecord,
+                                answer: aiText
+                            })
+                        });
+                    }
+                } catch (saveErr) { console.warn("追加提問存檔失敗：", saveErr); }
+            } catch (err) {
+                answerEl.innerHTML = `⚠️ <b>連結中斷或發生錯誤：</b><br>${err.message}`;
+            }
+        }
+ // ================= 星空引擎 (保證背景運作) =================
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let bgGradient;
+
+        function resizeCanvas() { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+            bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGradient.addColorStop(0, "#050914"); 
+            bgGradient.addColorStop(1, "#1a252f"); 
+        }
+        resizeCanvas(); 
+        window.addEventListener('resize', resizeCanvas);
+        
+        const stars = [];
+        for (let i = 0; i < 400; i++) { 
+            stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5, opacity: Math.random(), fadeSpeed: (Math.random() - 0.5) * 0.03 });
+        }
+        const shootingStars = [];
+
+        function drawUniverse() {
+            ctx.fillStyle = bgGradient; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            stars.forEach(star => {
+                ctx.beginPath(); ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`; ctx.fill();
+                star.opacity += star.fadeSpeed; 
+                if(star.opacity <= 0.1 || star.opacity >= 0.8) star.fadeSpeed *= -1; 
+            });
+
+            // 🌟 浪漫慢速版流星
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                let ss = shootingStars[i];
+                ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.length, ss.y + ss.length);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${ss.opacity})`; ctx.lineWidth = 1.5; ctx.stroke();
+                
+                // 速度套用設定值，並讓它消失得慢一點 (原本是 0.02，改成 0.006 讓它拖長)
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.006; 
+                if (ss.opacity <= 0) shootingStars.splice(i, 1);
+            }
+            
+            // 降低流星出現的頻率 (0.015)，並大幅降低速度 (2~4)
+            if (Math.random() < 0.015) {
+                shootingStars.push({ 
+                    x: Math.random() * canvas.width * 1.5, 
+                    y: Math.random() * (canvas.height / 2) - 100, 
+                    length: Math.random() * 60 + 30, // 流星尾巴長度
+                    speed: Math.random() * 2 + 2,    // ✨ 速度大幅調降，這就是浪漫的關鍵！
+                    opacity: 0.8                     // 一開始不要太刺眼，呈現朦朧美
+                });
+            }
+            requestAnimationFrame(drawUniverse);
+        }
+        drawUniverse();
+    </script>
+</body>
+</html>
