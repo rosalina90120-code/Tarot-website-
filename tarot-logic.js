@@ -42,9 +42,17 @@ const spreadsData = {
         name: "鑽石占卜法", layoutClass: "layout-diamond", 
         positions: [ { name: "① 過去狀況", cssClass: "diamond-pos-0" }, { name: "② 現況局面(一)", cssClass: "diamond-pos-1" }, { name: "③ 現況局面(二)", cssClass: "diamond-pos-2" }, { name: "④ 未來狀況", cssClass: "diamond-pos-3" } ] 
     },
-    "loversPyramid": { 
-        name: "戀人金字塔牌陣", layoutClass: "layout-pyramid", 
-        positions: [ { name: "① 自身", cssClass: "pyramid-pos-0" }, { name: "② 對象", cssClass: "pyramid-pos-1" }, { name: "③ 關係", cssClass: "pyramid-pos-2" }, { name: "④ 將來發展", cssClass: "pyramid-pos-3" } ] 
+    "loversPyramid": {
+        name: "戀人金字塔牌陣", layoutClass: "layout-pyramid",
+        positions: [ { name: "① 自身", cssClass: "pyramid-pos-0" }, { name: "② 對象", cssClass: "pyramid-pos-1" }, { name: "③ 關係", cssClass: "pyramid-pos-2" }, { name: "④ 將來發展", cssClass: "pyramid-pos-3" } ]
+    },
+    "peaceFan": {
+        name: "平安扇牌陣", layoutClass: "layout-fan",
+        positions: [ { name: "① 狀態（目前人際關係狀況）", cssClass: "fan-pos-0" }, { name: "② 緣起（與對方結識的因緣）", cssClass: "fan-pos-1" }, { name: "③ 走向（雙方關係未來發展趨勢）", cssClass: "fan-pos-2" }, { name: "④ 結局（對這段關係的結論）", cssClass: "fan-pos-3" } ]
+    },
+    "energyRelation": {
+        name: "能量關係占卜法", layoutClass: "layout-energy",
+        positions: [ { name: "① 自己提供的能量", cssClass: "energy-pos-0" }, { name: "② 對方提供的能量", cssClass: "energy-pos-1" }, { name: "③ 彼此交會的能量", cssClass: "energy-pos-2" }, { name: "④ 新的可能與方向", cssClass: "energy-pos-3" } ]
     }
 };
 
